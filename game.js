@@ -320,7 +320,7 @@ class Game {
                 targetVx: initialVx,
                 baseSpeed: baseSpeed * speedVar,
                 speedTimer: 1.8 + i * 0.7,
-                ropeLength: 48 + (i % 2 === 0 ? 0 : 16), // So le độ dài dây nhẹ để các thẻ khi xuyên qua nhau trông cực kỳ thoáng mắt
+                ropeLength: 48 + (i % 2 === 0 ? 0 : 200), // So le độ dài dây nhẹ để các thẻ khi xuyên qua nhau trông cực kỳ thoáng mắt
                 ropeCut: false,
                 ropeCutRatio: 0,
                 swayAngle: 0,
