@@ -593,29 +593,22 @@ class Game {
                         break;
                     }
 
-                    // Check if bullet hit card body instead of rope
-                    // Card body bounds: centered around (card.x, card.y + card.height/2)
+                    // Bullet pierces through card body (đạn xuyên qua thẻ bài)
+                    // Thẻ bài không còn chặn đạn, đạn tiếp tục bay thẳng lên để cắt dây!
                     const cardCenterY = card.y + card.height / 2;
                     const dx = Math.abs(b.x - card.x);
                     const dy = Math.abs(b.y - cardCenterY);
 
                     if (dx < card.width / 2 && dy < card.height / 2) {
-                        // Hit card body -> Deflect!
-                        this.sound.playCardDeflect();
-                        this.spawnSparks(b.x, b.y, '#94a3b8', 10);
-
-                        this.floatingTexts.push({
-                            text: 'BẮN VÀO DÂY!',
-                            x: b.x,
-                            y: b.y - 12,
-                            alpha: 1,
-                            vy: -1.2,
-                            color: '#f43f5e'
-                        });
-
-                        this.bullets.splice(bIndex, 1);
-                        bulletRemoved = true;
-                        break;
+                        // Hiệu ứng xuyên thấu nhẹ (chớp tia năng lượng) nếu chưa kích hoạt gần đây
+                        if (!b.hitCards) b.hitCards = new Set();
+                        if (!b.hitCards.has(card.id)) {
+                            b.hitCards.add(card.id);
+                            // Tia sáng năng lượng xuyên qua thẻ
+                            this.spawnSparks(b.x, b.y, card.def.color, 4);
+                            // Đạn truyền nhẹ một chút lực tác động khiến thẻ rung lắc
+                            card.swayVel += (b.vx > 0 ? 0.04 : -0.04);
+                        }
                     }
                 }
             }

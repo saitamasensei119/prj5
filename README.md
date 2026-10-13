@@ -9,8 +9,7 @@ Game arcade bắn súng cắt dây treo thẻ bài trên nền tảng **HTML5 Ca
 - **Tốc độ ngẫu nhiên**: Thanh ray liên tục thay đổi tốc độ, gia tốc và đảo chiều bất ngờ. Thẻ bài có hiệu ứng lắc lư theo quán tính.
 - **Bắn đứt dây**: Người chơi điều khiển nòng pháo ở dưới đáy:
   - **Trên điện thoại**: Chạm & kéo ngón tay trên màn hình để ngắm đường đạn laser -> Thả tay ra để BẮN!
-  - **Trên máy tính**: Nhấp giữ chuột để ngắm -> Nhả chuột để bắn.
-- **Mục tiêu**: Bắn chính xác vào **sợi dây treo** để cắt đứt dây làm thẻ rơi xuống. Nếu bắn trúng thân thẻ, đạn sẽ bị nảy ra (nhắc nhở bạn phải nhắm vào dây).
+- **Mục tiêu & Đạn xuyên thấu**: Đạn có thể **xuyên thẳng qua thân thẻ bài** mà không bị chặn, bay thẳng lên để cắt đứt **sợi dây treo** làm thẻ rơi xuống!
 - **Hoàn thành màn**: Bắn rơi đủ 4 thẻ để qua màn mới với tốc độ nhanh và thử thách hơn!
 
 ---
