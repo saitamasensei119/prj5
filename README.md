@@ -20,8 +20,8 @@ Bạn có thể tự thay 4 thẻ bài bằng bất kỳ ảnh nào bạn thích
    - `assets/card2.png` (thay cho thẻ thứ 2)
    - `assets/card3.png` (thay cho thẻ thứ 3)
    - `assets/card4.png` (thay cho thẻ thứ 4)
-2. **Kích thước khuyến nghị**: Chuẩn **208 x 296 px** (hoặc tỉ lệ 2:3 như `416x592 px`). Định dạng: `.jpg`, `.png`, `.webp`.
-3. Game sẽ tự động nạp ảnh (hỗ trợ cả `.jpg` và `.png`), bo tròn góc 16px và bọc viền neon phát sáng. Nếu chưa có ảnh, game tự động vẽ quân bài mặc định!
+2. **Kích thước khuyến nghị**: Chuẩn **156 x 222 px** (hoặc tỉ lệ 2:3 như `312x444 px`). Định dạng: `.jpg`, `.png`, `.webp`.
+3. Game sẽ tự động nạp ảnh (hỗ trợ cả `.jpg` và `.png`), bo tròn góc 12px và bọc viền neon phát sáng. Nếu chưa có ảnh, game tự động vẽ quân bài mặc định!
 
 ---
 

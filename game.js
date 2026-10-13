@@ -198,9 +198,9 @@ class Game {
             cardWidth: 70
         };
 
-        // Card Dimensions chuẩn xác (208 x 296 px)
-        this.cardWidth = 208;
-        this.cardHeight = 296;
+        // Card Dimensions chuẩn xác (156 x 222 px)
+        this.cardWidth = 156;
+        this.cardHeight = 222;
         this.startCountdown = 5.0; // 5s đầu trận các thẻ đứng yên
 
         this.cards = [];
@@ -289,7 +289,7 @@ class Game {
         this.victoryModal.classList.add('hidden');
         this.startCountdown = 5.0; // Đứng yên 5 giây lúc mới vào
 
-        // Kích thước thẻ chuẩn xác theo yêu cầu (208 x 296 px)
+        // Kích thước thẻ chuẩn xác theo yêu cầu (156 x 222 px)
         const cardWidth = this.cardWidth;
         const cardHeight = this.cardHeight;
 
@@ -913,7 +913,7 @@ class Game {
             this.ctx.stroke();
         }
 
-        // 2. Draw Card Body (Kích thước 208 x 296 px)
+        // 2. Draw Card Body (Kích thước 156 x 222 px)
         this.ctx.save();
         this.ctx.translate(card.x, card.y);
         this.ctx.rotate(card.rotation);
@@ -923,20 +923,20 @@ class Game {
 
         // Card Drop Shadow
         this.ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
-        this.ctx.shadowBlur = 14;
-        this.ctx.shadowOffsetY = 6;
+        this.ctx.shadowBlur = 12;
+        this.ctx.shadowOffsetY = 5;
 
         // Card Background
         this.ctx.fillStyle = card.def.bg;
         this.ctx.beginPath();
-        this.ctx.roundRect(-cw / 2, 0, cw, ch, 16);
+        this.ctx.roundRect(-cw / 2, 0, cw, ch, 12);
         this.ctx.fill();
 
         // If custom image is loaded, render image clipped with rounded corners (cover fit)
         if (card.def.imageLoaded && card.def.image) {
             this.ctx.save();
             this.ctx.beginPath();
-            this.ctx.roundRect(-cw / 2, 0, cw, ch, 16);
+            this.ctx.roundRect(-cw / 2, 0, cw, ch, 12);
             this.ctx.clip();
 
             const img = card.def.image;
@@ -955,37 +955,37 @@ class Game {
             this.ctx.drawImage(img, sx, sy, sw, sh, -cw / 2, 0, cw, ch);
             this.ctx.restore();
         } else {
-            // Fallback: Default Rank & Suit (Scaled for 208 x 296 px)
+            // Fallback: Default Rank & Suit (Scaled for 156 x 222 px)
             this.ctx.fillStyle = card.def.color;
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
 
             // Top Corner Symbol
-            this.ctx.font = 'bold 26px Outfit, sans-serif';
-            this.ctx.fillText(`${card.def.val}`, -cw / 2 + 24, 26);
-            this.ctx.font = '24px Outfit, sans-serif';
-            this.ctx.fillText(`${card.def.suit}`, -cw / 2 + 24, 54);
+            this.ctx.font = 'bold 22px Outfit, sans-serif';
+            this.ctx.fillText(`${card.def.val}`, -cw / 2 + 18, 22);
+            this.ctx.font = '20px Outfit, sans-serif';
+            this.ctx.fillText(`${card.def.suit}`, -cw / 2 + 18, 44);
 
             // Center Big Suit
-            this.ctx.font = '76px Outfit, sans-serif';
-            this.ctx.fillText(card.def.suit, 0, ch / 2 + 6);
+            this.ctx.font = '60px Outfit, sans-serif';
+            this.ctx.fillText(card.def.suit, 0, ch / 2 + 5);
 
             // Card Name Tag
-            this.ctx.font = 'bold 18px Rajdhani, sans-serif';
+            this.ctx.font = 'bold 15px Rajdhani, sans-serif';
             this.ctx.fillStyle = '#94a3b8';
-            this.ctx.fillText(card.def.name, 0, ch - 22);
+            this.ctx.fillText(card.def.name, 0, ch - 18);
         }
 
         // Card Border (neon outline)
         this.ctx.shadowBlur = 0;
         this.ctx.strokeStyle = card.def.border;
-        this.ctx.lineWidth = 3;
+        this.ctx.lineWidth = 2.5;
         this.ctx.stroke();
 
         // Top Attachment Ring on Card
         this.ctx.fillStyle = '#e2e8f0';
         this.ctx.beginPath();
-        this.ctx.arc(0, 0, 5, 0, Math.PI * 2);
+        this.ctx.arc(0, 0, 4, 0, Math.PI * 2);
         this.ctx.fill();
 
         this.ctx.restore();
