@@ -201,7 +201,7 @@ class Game {
         // Card Dimensions chuẩn xác (156 x 222 px)
         this.cardWidth = 156;
         this.cardHeight = 222;
-        this.startCountdown = 5.0; // 5s đầu trận các thẻ đứng yên
+        this.startCountdown = 1.0; // 1s đầu trận các thẻ đứng yên
 
         this.cards = [];
         this.cardDefinitions = [
@@ -287,7 +287,7 @@ class Game {
         this.particles = [];
         this.floatingTexts = [];
         this.victoryModal.classList.add('hidden');
-        this.startCountdown = 5.0; // Đứng yên 5 giây lúc mới vào
+        this.startCountdown = 1.0; // Đứng yên 1 giây lúc mới vào
 
         // Kích thước thẻ chuẩn xác theo yêu cầu (156 x 222 px)
         const cardWidth = this.cardWidth;
