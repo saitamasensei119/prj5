@@ -5,12 +5,23 @@ Game arcade bắn súng cắt dây treo thẻ bài trên nền tảng **HTML5 Ca
 ---
 
 ## 🎮 Cách Chơi (Gameplay)
-- **Cơ chế chính**: Có **4 thẻ bài** (♠ Bích, ♥ Cơ, ♦ Rô, ♣ Tép) được treo bằng dây trên một thanh ray di chuyển ngang ở phía trên.
-- **Tốc độ ngẫu nhiên**: Thanh ray liên tục thay đổi tốc độ, gia tốc và đảo chiều bất ngờ. Thẻ bài có hiệu ứng lắc lư theo quán tính.
+- **Cơ chế chính**: **Thanh ray cố định** trên đỉnh màn hình. Cả 4 thẻ bài di chuyển ngang độc lập với các hướng và vận tốc khác nhau, **có thể lướt xuyên qua nhau** mượt mà, thẳng đứng và không bị lắc.
 - **Bắn đứt dây**: Người chơi điều khiển nòng pháo ở dưới đáy:
   - **Trên điện thoại**: Chạm & kéo ngón tay trên màn hình để ngắm đường đạn laser -> Thả tay ra để BẮN!
 - **Mục tiêu & Đạn xuyên thấu**: Đạn có thể **xuyên thẳng qua thân thẻ bài** mà không bị chặn, bay thẳng lên để cắt đứt **sợi dây treo** làm thẻ rơi xuống!
 - **Hoàn thành màn**: Bắn rơi đủ 4 thẻ để qua màn mới với tốc độ nhanh và thử thách hơn!
+
+---
+
+## 🖼️ Cách Thay Thẻ Bằng Hình Ảnh Tự Chọn
+Bạn có thể tự thay 4 thẻ bài bằng bất kỳ ảnh nào bạn thích (ảnh meme, anime, logo, avatar,...):
+1. Chuẩn bị 4 file ảnh và chép vào thư mục `assets/` với đúng tên sau:
+   - `assets/card1.png` (thay cho thẻ thứ 1)
+   - `assets/card2.png` (thay cho thẻ thứ 2)
+   - `assets/card3.png` (thay cho thẻ thứ 3)
+   - `assets/card4.png` (thay cho thẻ thứ 4)
+2. **Kích thước khuyến nghị**: Chuẩn **208 x 296 px** (hoặc tỉ lệ 2:3 như `416x592 px`). Định dạng: `.jpg`, `.png`, `.webp`.
+3. Game sẽ tự động nạp ảnh (hỗ trợ cả `.jpg` và `.png`), bo tròn góc 16px và bọc viền neon phát sáng. Nếu chưa có ảnh, game tự động vẽ quân bài mặc định!
 
 ---
 

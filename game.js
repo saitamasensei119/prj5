@@ -180,31 +180,69 @@ class Game {
         this.particles = [];
         this.floatingTexts = [];
 
-        // Hanging Horizontal Bar & 4 Cards
+        // Fixed Rail Track & Sliding Trolley (Thanh cố định, móc & dây & thẻ trượt trên thanh)
         this.rail = {
             x: 0,
-            y: 90,
-            vx: 1.8,
-            targetVx: 1.8,
-            speedChangeTimer: 0,
-            baseSpeed: 2.2,
-            width: 320,
-            height: 12
+            y: 85,
+            width: 360,
+            height: 14
         };
+
+        this.trolley = {
+            x: 0,
+            vx: 1.6,
+            targetVx: 1.6,
+            speedTimer: 0,
+            baseSpeed: 1.8,
+            cardSpacing: 80,
+            cardWidth: 70
+        };
+
+        // Card Dimensions chuẩn xác (208 x 296 px)
+        this.cardWidth = 208;
+        this.cardHeight = 296;
+        this.startCountdown = 5.0; // 5s đầu trận các thẻ đứng yên
 
         this.cards = [];
         this.cardDefinitions = [
-            { suit: '♠', val: 'A', name: 'Bích', color: '#38bdf8', bg: '#0f172a', border: '#38bdf8' },
-            { suit: '♥', val: 'K', name: 'Cơ', color: '#f43f5e', bg: '#1e1124', border: '#f43f5e' },
-            { suit: '♦', val: 'Q', name: 'Rô', color: '#fbbf24', bg: '#23180c', border: '#fbbf24' },
-            { suit: '♣', val: 'J', name: 'Tép', color: '#34d399', bg: '#0c2017', border: '#34d399' }
+            { id: 1, imgSrc: 'assets/card1.jpg', suit: '♠', val: 'A', name: 'Thẻ 1', color: '#38bdf8', bg: '#0f172a', border: '#38bdf8' },
+            { id: 2, imgSrc: 'assets/card2.jpg', suit: '♥', val: 'K', name: 'Thẻ 2', color: '#f43f5e', bg: '#1e1124', border: '#f43f5e' },
+            { id: 3, imgSrc: 'assets/card3.jpg', suit: '♦', val: 'Q', name: 'Thẻ 3', color: '#fbbf24', bg: '#23180c', border: '#fbbf24' },
+            { id: 4, imgSrc: 'assets/card4.jpg', suit: '♣', val: 'J', name: 'Thẻ 4', color: '#34d399', bg: '#0c2017', border: '#34d399' }
         ];
 
+        this.preloadCardImages();
         this.initResize();
         this.bindEvents();
         this.resetGame();
         this.lastTime = performance.now();
         requestAnimationFrame((time) => this.loop(time));
+    }
+
+    preloadCardImages() {
+        this.cardDefinitions.forEach(def => {
+            const tryLoad = (src, altSrc) => {
+                const img = new Image();
+                img.onload = () => {
+                    def.imageLoaded = true;
+                    def.image = img;
+                };
+                img.onerror = () => {
+                    if (altSrc) {
+                        tryLoad(altSrc, null);
+                    } else {
+                        def.imageLoaded = false;
+                    }
+                };
+                img.src = src;
+            };
+
+            // Hỗ trợ tự động nhận diện cả file .jpg và .png
+            const baseName = def.imgSrc.replace(/\.(jpg|png|jpeg|webp)$/i, '');
+            const primary = def.imgSrc;
+            const alternative = primary.endsWith('.jpg') ? `${baseName}.png` : `${baseName}.jpg`;
+            tryLoad(primary, alternative);
+        });
     }
 
     initResize() {
@@ -222,9 +260,11 @@ class Game {
             this.cannon.x = this.width / 2;
             this.cannon.y = this.height - 45;
 
-            // Update rail baseline
-            this.rail.y = Math.max(90, this.height * 0.14);
-            this.rail.width = Math.min(this.width * 0.82, 360);
+            // Thanh ray cố định trên đỉnh màn hình (không di chuyển)
+            this.rail.x = this.width / 2;
+            this.rail.y = Math.max(65, this.height * 0.08);
+            this.rail.width = Math.min(this.width - 20, 680);
+            this.trolley.x = this.rail.x;
         };
 
         window.addEventListener('resize', resize);
@@ -247,34 +287,45 @@ class Game {
         this.particles = [];
         this.floatingTexts = [];
         this.victoryModal.classList.add('hidden');
+        this.startCountdown = 5.0; // Đứng yên 5 giây lúc mới vào
 
-        // Dynamic Speed Progression: Màn sau nhanh hơn rõ rệt
-        // Level 1: 2.0 | Level 2: 3.2 | Level 3: 4.4 | Level 4: 5.6...
-        this.rail.baseSpeed = 2.0 + (this.level - 1) * 1.2;
-        this.rail.vx = this.rail.baseSpeed;
-        this.rail.targetVx = this.rail.vx;
-        this.rail.x = this.width / 2;
+        // Kích thước thẻ chuẩn xác theo yêu cầu (208 x 296 px)
+        const cardWidth = this.cardWidth;
+        const cardHeight = this.cardHeight;
 
-        // Setup 4 hanging cards
-        const cardWidth = 52;
-        const cardHeight = 74;
-        const ropeLength = Math.max(70, this.height * 0.12);
-        const cardSpacing = this.rail.width / 4;
-        const startOffset = -this.rail.width / 2 + cardSpacing / 2;
+        // Tốc độ di chuyển cơ sở theo màn chơi
+        const baseSpeed = 1.6 + (this.level - 1) * 0.6;
+
+        // Giới hạn trượt trên thanh ray: móc trượt có thể lướt dọc chiều dài thanh ray
+        const railHalf = this.rail.width / 2;
+        const minTravelX = Math.max(this.rail.x - railHalf + 35, 45);
+        const maxTravelX = Math.min(this.rail.x + railHalf - 35, this.width - 45);
+        const span = Math.max(80, maxTravelX - minTravelX);
 
         this.cards = this.cardDefinitions.map((def, i) => {
+            // Vị trí xuất phát rải đều trên thanh
+            const startX = minTravelX + (i / 3) * span;
+
+            // Hướng di chuyển so le đan xen: Thẻ 0, 2 đi sang phải | Thẻ 1, 3 đi sang trái
+            // Vận tốc khác nhau để các thẻ liên tục đan chéo và XUYÊN QUA NHAU
+            const initialDir = (i % 2 === 0) ? 1 : -1;
+            const speedVar = 0.85 + (i * 0.22);
+            const initialVx = initialDir * baseSpeed * speedVar;
+
             return {
                 id: i,
                 def: def,
-                offsetX: startOffset + i * cardSpacing,
-                ropeLength: ropeLength + (i % 2 === 0 ? 0 : 15),
+                x: startX,
+                vx: initialVx,
+                targetVx: initialVx,
+                baseSpeed: baseSpeed * speedVar,
+                speedTimer: 1.8 + i * 0.7,
+                ropeLength: 48 + (i % 2 === 0 ? 0 : 16), // So le độ dài dây nhẹ để các thẻ khi xuyên qua nhau trông cực kỳ thoáng mắt
                 ropeCut: false,
                 ropeCutRatio: 0,
                 swayAngle: 0,
                 swayVel: 0,
-                x: 0,
                 y: 0,
-                vx: 0,
                 vy: 0,
                 rotation: 0,
                 rotSpeed: 0,
@@ -457,61 +508,56 @@ class Game {
     }
 
     update(dt) {
-        // --- 1. Rail Random Speed & Movement ---
-        this.rail.speedChangeTimer -= dt;
-        if (this.rail.speedChangeTimer <= 0) {
-            // Pick a new random speed and direction
-            // Higher level = more frequent direction swaps & wider speed range
-            const dir = Math.random() < 0.5 ? 1 : -1;
-            const speedMultiplier = 0.7 + Math.random() * (1.2 + this.level * 0.15);
-            this.rail.targetVx = dir * this.rail.baseSpeed * speedMultiplier;
-            // Interval gets shorter at higher levels (Level 1: ~1.8s, Level 4: ~0.9s)
-            const minInterval = Math.max(0.6, 1.4 - (this.level - 1) * 0.2);
-            this.rail.speedChangeTimer = minInterval + Math.random() * 0.8;
+        // --- 1. Cập nhật vị trí từng thẻ độc lập (Trượt và XUYÊN QUA NHAU trên thanh) ---
+        const hookY = this.rail.y + this.rail.height / 2;
+        const railHalf = this.rail.width / 2;
+        const minX = Math.max(this.rail.x - railHalf + 35, 45);
+        const maxX = Math.min(this.rail.x + railHalf - 35, this.width - 45);
+
+        // Đếm ngược 5 giây đầu trận thẻ đứng yên
+        if (this.startCountdown > 0) {
+            this.startCountdown = Math.max(0, this.startCountdown - dt);
         }
 
-        // Smoothly accelerate/decelerate towards target speed
-        this.rail.vx += (this.rail.targetVx - this.rail.vx) * 0.06;
-        this.rail.x += this.rail.vx;
-
-        // Bounce rail at left & right borders with bounce padding
-        const halfRail = this.rail.width / 2;
-        const padding = 15;
-        if (this.rail.x - halfRail < padding) {
-            this.rail.x = padding + halfRail;
-            this.rail.vx = Math.abs(this.rail.vx);
-            this.rail.targetVx = Math.abs(this.rail.targetVx);
-        } else if (this.rail.x + halfRail > this.width - padding) {
-            this.rail.x = this.width - padding - halfRail;
-            this.rail.vx = -Math.abs(this.rail.vx);
-            this.rail.targetVx = -Math.abs(this.rail.targetVx);
-        }
-
-        // Cannon recoil recovery
-        if (this.cannon.recoil > 0) {
-            this.cannon.recoil = Math.max(0, this.cannon.recoil - 0.5);
-        }
-
-        // --- 2. Update Cards & Hanging Ropes ---
         this.cards.forEach((card) => {
             if (!card.ropeCut) {
-                // Sway physics based on rail movement and acceleration
-                const hookX = this.rail.x + card.offsetX;
-                const hookY = this.rail.y + this.rail.height / 2;
+                if (this.startCountdown > 0) {
+                    // 5 giây đầu trận: Thẻ đứng yên hoàn toàn
+                    card.vx = 0;
+                } else {
+                    // Sau 5 giây: Thẻ bắt đầu di chuyển, đổi hướng / tốc độ ngẫu nhiên độc lập
+                    card.speedTimer -= dt;
+                    if (card.speedTimer <= 0) {
+                        const dir = Math.random() < 0.5 ? 1 : -1;
+                        const speedMultiplier = 0.75 + Math.random() * 0.75;
+                        card.targetVx = dir * card.baseSpeed * speedMultiplier;
+                        card.speedTimer = 2.0 + Math.random() * 2.0;
+                    }
 
-                // Inertia sway: sway responds to rail velocity
-                const targetSway = (-this.rail.vx / 10);
-                card.swayVel += (targetSway - card.swayAngle) * 0.08;
-                card.swayVel *= 0.92; // damping
-                card.swayAngle += card.swayVel;
+                    // Cập nhật vị trí trượt mượt mà
+                    card.vx += (card.targetVx - card.vx) * 0.05;
+                    card.x += card.vx;
 
-                // Position of card hanging from rope
-                card.x = hookX + Math.sin(card.swayAngle) * card.ropeLength;
-                card.y = hookY + Math.cos(card.swayAngle) * card.ropeLength;
-                card.rotation = card.swayAngle;
+                    // Nảy lại khi móc trượt chạm 2 đầu giới hạn trên thanh ray cố định
+                    if (card.x < minX) {
+                        card.x = minX;
+                        card.vx = Math.abs(card.vx);
+                        card.targetVx = Math.abs(card.targetVx);
+                    } else if (card.x > maxX) {
+                        card.x = maxX;
+                        card.vx = -Math.abs(card.vx);
+                        card.targetVx = -Math.abs(card.targetVx);
+                    }
+                }
+
+                // Thẻ và dây thẳng đứng 100%, di chuyển êm, KHÔNG LẮC
+                card.swayAngle = 0;
+                card.swayVel = 0;
+                card.y = hookY + card.ropeLength;
+                card.rotation = 0;
             } else {
-                // Free fall physics when rope is cut!
-                card.vy += 0.45; // Gravity
+                // Rơi tự do khi dây bị cắt
+                card.vy += 0.45; // Trọng lực rơi
                 card.x += card.vx;
                 card.y += card.vy;
                 card.rotation += card.rotSpeed;
@@ -524,7 +570,12 @@ class Game {
             }
         });
 
-        // --- 3. Update Bullets & Hit Detection ---
+        // Cannon recoil recovery
+        if (this.cannon.recoil > 0) {
+            this.cannon.recoil = Math.max(0, this.cannon.recoil - 0.5);
+        }
+
+        // --- 2. Update Bullets & Hit Detection ---
         for (let bIndex = this.bullets.length - 1; bIndex >= 0; bIndex--) {
             const b = this.bullets[bIndex];
             b.prevX = b.x;
@@ -544,7 +595,7 @@ class Game {
 
                 // If rope is still intact, check bullet hit on the rope line!
                 if (!card.ropeCut) {
-                    const hookX = this.rail.x + card.offsetX;
+                    const hookX = card.x;
                     const hookY = this.rail.y + this.rail.height / 2;
                     const cardTopX = card.x;
                     const cardTopY = card.y;
@@ -567,10 +618,10 @@ class Game {
 
                         this.sound.playRopeCut();
 
-                        // Card takes inherited momentum + outward velocity
-                        card.vx = this.rail.vx * 0.8 + (Math.random() - 0.5) * 2;
+                        // Card keeps its horizontal momentum while falling down
+                        card.vx = card.vx * 0.8 + (Math.random() - 0.5) * 1.5;
                         card.vy = 1;
-                        card.rotSpeed = (Math.random() - 0.5) * 0.08 + (this.rail.vx > 0 ? 0.03 : -0.03);
+                        card.rotSpeed = (Math.random() - 0.5) * 0.06 + (card.vx > 0 ? 0.02 : -0.02);
 
                         // Sparks at cut point
                         const cutX = hookX + hitCheck.t * (cardTopX - hookX);
@@ -606,8 +657,6 @@ class Game {
                             b.hitCards.add(card.id);
                             // Tia sáng năng lượng xuyên qua thẻ
                             this.spawnSparks(b.x, b.y, card.def.color, 4);
-                            // Đạn truyền nhẹ một chút lực tác động khiến thẻ rung lắc
-                            card.swayVel += (b.vx > 0 ? 0.04 : -0.04);
                         }
                     }
                 }
@@ -794,35 +843,51 @@ class Game {
         this.ctx.arc(rx + this.rail.width, ry + this.rail.height / 2, 7, 0, Math.PI * 2);
         this.ctx.fill();
 
-        // Level indicator text on rail
+        // Level indicator text on rail with countdown display
         this.ctx.shadowBlur = 0;
         this.ctx.fillStyle = '#0f172a';
         this.ctx.font = 'bold 9px Rajdhani, sans-serif';
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(`MÀN ${this.level} • TỐC ĐỘ: ${Math.abs(this.rail.vx).toFixed(1)}x`, this.rail.x, this.rail.y);
+
+        if (this.startCountdown > 0) {
+            const sec = Math.ceil(this.startCountdown);
+            this.ctx.fillText(`MÀN ${this.level} • THẺ SẼ CHẠY SAU: ${sec}S`, this.rail.x, this.rail.y);
+        } else {
+            this.ctx.fillText(`MÀN ${this.level} • CẮT DÂY 4 THẺ DI CHUYỂN`, this.rail.x, this.rail.y);
+        }
 
         this.ctx.restore();
     }
 
     drawCardAndRope(card) {
         this.ctx.save();
-        const hookX = this.rail.x + card.offsetX;
+        const hookX = card.x;
         const hookY = this.rail.y + this.rail.height / 2;
 
-        // Draw Hook Ring on Rail
+        // Draw Sliding Trolley Clamp on Rail (Móc trượt kim loại di chuyển dọc trên thanh)
         this.ctx.fillStyle = '#f59e0b';
         this.ctx.beginPath();
-        this.ctx.arc(hookX, hookY, 4, 0, Math.PI * 2);
+        this.ctx.roundRect(hookX - 8, hookY - 6, 16, 12, 3);
         this.ctx.fill();
 
-        // 1. Draw Rope
+        this.ctx.strokeStyle = '#fff';
+        this.ctx.lineWidth = 1;
+        this.ctx.stroke();
+
+        // Bottom Hook Eyelet
+        this.ctx.fillStyle = '#cbd5e1';
+        this.ctx.beginPath();
+        this.ctx.arc(hookX, hookY + 5, 4, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // 1. Draw Rope (Dây nối từ móc trượt xuống thẻ)
         if (!card.ropeCut) {
             // Intact Rope
             this.ctx.strokeStyle = '#e2e8f0';
             this.ctx.lineWidth = 2.5;
             this.ctx.beginPath();
-            this.ctx.moveTo(hookX, hookY);
+            this.ctx.moveTo(hookX, hookY + 5);
             this.ctx.lineTo(card.x, card.y);
             this.ctx.stroke();
 
@@ -831,24 +896,24 @@ class Game {
             this.ctx.lineWidth = 1;
             this.ctx.setLineDash([3, 4]);
             this.ctx.beginPath();
-            this.ctx.moveTo(hookX, hookY);
+            this.ctx.moveTo(hookX, hookY + 5);
             this.ctx.lineTo(card.x, card.y);
             this.ctx.stroke();
             this.ctx.setLineDash([]);
         } else {
-            // Cut Rope: upper dangling stub
+            // Cut Rope: upper dangling stub on the sliding trolley
             const cutT = card.ropeCutRatio || 0.5;
             const stubX = hookX + cutT * (hookX - card.x) * 0.2;
-            const stubY = hookY + cutT * 25;
+            const stubY = hookY + 5 + cutT * 22;
             this.ctx.strokeStyle = '#f59e0b';
             this.ctx.lineWidth = 2;
             this.ctx.beginPath();
-            this.ctx.moveTo(hookX, hookY);
+            this.ctx.moveTo(hookX, hookY + 5);
             this.ctx.lineTo(stubX, stubY);
             this.ctx.stroke();
         }
 
-        // 2. Draw Card Body
+        // 2. Draw Card Body (Kích thước 208 x 296 px)
         this.ctx.save();
         this.ctx.translate(card.x, card.y);
         this.ctx.rotate(card.rotation);
@@ -858,46 +923,70 @@ class Game {
 
         // Card Drop Shadow
         this.ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
-        this.ctx.shadowBlur = 10;
-        this.ctx.shadowOffsetY = 4;
+        this.ctx.shadowBlur = 14;
+        this.ctx.shadowOffsetY = 6;
 
         // Card Background
         this.ctx.fillStyle = card.def.bg;
         this.ctx.beginPath();
-        this.ctx.roundRect(-cw / 2, 0, cw, ch, 8);
+        this.ctx.roundRect(-cw / 2, 0, cw, ch, 16);
         this.ctx.fill();
 
-        // Card Border
+        // If custom image is loaded, render image clipped with rounded corners (cover fit)
+        if (card.def.imageLoaded && card.def.image) {
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.roundRect(-cw / 2, 0, cw, ch, 16);
+            this.ctx.clip();
+
+            const img = card.def.image;
+            const imgRatio = img.width / img.height;
+            const cardRatio = cw / ch;
+            let sx = 0, sy = 0, sw = img.width, sh = img.height;
+
+            if (imgRatio > cardRatio) {
+                sw = img.height * cardRatio;
+                sx = (img.width - sw) / 2;
+            } else {
+                sh = img.width / cardRatio;
+                sy = (img.height - sh) / 2;
+            }
+
+            this.ctx.drawImage(img, sx, sy, sw, sh, -cw / 2, 0, cw, ch);
+            this.ctx.restore();
+        } else {
+            // Fallback: Default Rank & Suit (Scaled for 208 x 296 px)
+            this.ctx.fillStyle = card.def.color;
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+
+            // Top Corner Symbol
+            this.ctx.font = 'bold 26px Outfit, sans-serif';
+            this.ctx.fillText(`${card.def.val}`, -cw / 2 + 24, 26);
+            this.ctx.font = '24px Outfit, sans-serif';
+            this.ctx.fillText(`${card.def.suit}`, -cw / 2 + 24, 54);
+
+            // Center Big Suit
+            this.ctx.font = '76px Outfit, sans-serif';
+            this.ctx.fillText(card.def.suit, 0, ch / 2 + 6);
+
+            // Card Name Tag
+            this.ctx.font = 'bold 18px Rajdhani, sans-serif';
+            this.ctx.fillStyle = '#94a3b8';
+            this.ctx.fillText(card.def.name, 0, ch - 22);
+        }
+
+        // Card Border (neon outline)
         this.ctx.shadowBlur = 0;
         this.ctx.strokeStyle = card.def.border;
-        this.ctx.lineWidth = 2;
+        this.ctx.lineWidth = 3;
         this.ctx.stroke();
 
         // Top Attachment Ring on Card
         this.ctx.fillStyle = '#e2e8f0';
         this.ctx.beginPath();
-        this.ctx.arc(0, 0, 3.5, 0, Math.PI * 2);
+        this.ctx.arc(0, 0, 5, 0, Math.PI * 2);
         this.ctx.fill();
-
-        // Card Content: Rank & Suit
-        this.ctx.fillStyle = card.def.color;
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-
-        // Top Corner Symbol
-        this.ctx.font = 'bold 13px Outfit, sans-serif';
-        this.ctx.fillText(`${card.def.val}`, -cw / 2 + 11, 14);
-        this.ctx.font = '12px Outfit, sans-serif';
-        this.ctx.fillText(`${card.def.suit}`, -cw / 2 + 11, 27);
-
-        // Center Big Suit
-        this.ctx.font = '26px Outfit, sans-serif';
-        this.ctx.fillText(card.def.suit, 0, ch / 2 + 2);
-
-        // Card Name Tag
-        this.ctx.font = 'bold 9px Rajdhani, sans-serif';
-        this.ctx.fillStyle = '#94a3b8';
-        this.ctx.fillText(card.def.name, 0, ch - 11);
 
         this.ctx.restore();
         this.ctx.restore();
