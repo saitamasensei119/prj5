@@ -204,11 +204,12 @@ class Game {
         this.startCountdown = 1.0; // 1s đầu trận các thẻ đứng yên
 
         this.cards = [];
-        this.cardDefinitions = [
-            { id: 1, imgSrc: 'assets/card1.jpg', suit: '♠', val: 'A', name: 'Thẻ 1', color: '#38bdf8', bg: '#0f172a', border: '#38bdf8' },
-            { id: 2, imgSrc: 'assets/card2.jpg', suit: '♥', val: 'K', name: 'Thẻ 2', color: '#f43f5e', bg: '#1e1124', border: '#f43f5e' },
-            { id: 3, imgSrc: 'assets/card3.jpg', suit: '♦', val: 'Q', name: 'Thẻ 3', color: '#fbbf24', bg: '#23180c', border: '#fbbf24' },
-            { id: 4, imgSrc: 'assets/card4.jpg', suit: '♣', val: 'J', name: 'Thẻ 4', color: '#34d399', bg: '#0c2017', border: '#34d399' }
+        this.imagePool = [];
+        this.cardThemes = [
+            { suit: '♠', val: 'A', color: '#38bdf8', bg: '#0f172a', border: '#38bdf8' },
+            { suit: '♥', val: 'K', color: '#f43f5e', bg: '#1e1124', border: '#f43f5e' },
+            { suit: '♦', val: 'Q', color: '#fbbf24', bg: '#23180c', border: '#fbbf24' },
+            { suit: '♣', val: 'J', color: '#34d399', bg: '#0c2017', border: '#34d399' }
         ];
 
         this.preloadCardImages();
@@ -220,28 +221,100 @@ class Game {
     }
 
     preloadCardImages() {
-        this.cardDefinitions.forEach(def => {
-            const tryLoad = (src, altSrc) => {
+        this.imagePool = [];
+        const maxImagesToScan = 11; // Quét tự động từ card1 đến card30
+
+        for (let i = 1; i <= maxImagesToScan; i++) {
+            const tryLoad = (srcs, index = 0) => {
+                if (index >= srcs.length) return;
                 const img = new Image();
                 img.onload = () => {
-                    def.imageLoaded = true;
-                    def.image = img;
-                };
-                img.onerror = () => {
-                    if (altSrc) {
-                        tryLoad(altSrc, null);
-                    } else {
-                        def.imageLoaded = false;
+                    if (!this.imagePool.some(p => p.id === i)) {
+                        this.imagePool.push({
+                            id: i,
+                            src: srcs[index],
+                            img: img
+                        });
+                        this.assignPoolImagesToCards();
                     }
                 };
-                img.src = src;
+                img.onerror = () => {
+                    tryLoad(srcs, index + 1);
+                };
+                img.src = srcs[index];
             };
 
-            // Hỗ trợ tự động nhận diện cả file .jpg và .png
-            const baseName = def.imgSrc.replace(/\.(jpg|png|jpeg|webp)$/i, '');
-            const primary = def.imgSrc;
-            const alternative = primary.endsWith('.jpg') ? `${baseName}.png` : `${baseName}.jpg`;
-            tryLoad(primary, alternative);
+            tryLoad([
+                `assets/card${i}.jpg`,
+                `assets/card${i}.png`,
+                `assets/card${i}.webp`,
+                `assets/card${i}.jpeg`
+            ]);
+        }
+    }
+
+    getCardImageIndex(level, i) {
+        // Công thức: ảnh = (level % 11) + thứ tự i (0, 1, 2, 3)
+        // Khi level chia hết cho 11 (màn 11, 22...), base sẽ là 11 (thay vì 0 vì không có card0)
+        // Nếu giá trị > 11 thì chuyển thành dấu trừ: base - i
+        const base = (level % 11) || 11;
+        let val = (base-1)*2 + i+1;
+        if (val > 11) {
+            val = base - i;
+        }
+        return val;
+    }
+
+    getLevelCardDefinitions(level) {
+        const defs = [];
+        for (let i = 0; i < 4; i++) {
+            const cardIndex = this.getCardImageIndex(level, i);
+            const theme = this.cardThemes[i % this.cardThemes.length];
+            const poolItem = this.imagePool.find(p => p.id === cardIndex);
+
+            if (poolItem) {
+                defs.push({
+                    id: cardIndex,
+                    imgSrc: poolItem.src,
+                    imageLoaded: true,
+                    image: poolItem.img,
+                    suit: theme.suit,
+                    val: theme.val,
+                    name: `Thẻ ${cardIndex}`,
+                    color: theme.color,
+                    bg: theme.bg,
+                    border: theme.border
+                });
+            } else {
+                // Dự phòng nếu ảnh chưa hoàn tất nạp từ bộ nhớ
+                defs.push({
+                    id: cardIndex,
+                    imgSrc: `assets/card${cardIndex}.jpg`,
+                    imageLoaded: false,
+                    image: null,
+                    suit: theme.suit,
+                    val: theme.val,
+                    name: `Thẻ ${cardIndex}`,
+                    color: theme.color,
+                    bg: theme.bg,
+                    border: theme.border
+                });
+            }
+        }
+        return defs;
+    }
+
+    assignPoolImagesToCards() {
+        if (!this.cards || this.cards.length === 0) return;
+        this.cards.forEach((card) => {
+            if (!card.def.imageLoaded) {
+                const item = this.imagePool.find(p => p.id === card.def.id);
+                if (item) {
+                    card.def.imageLoaded = true;
+                    card.def.image = item.img;
+                    card.def.imgSrc = item.src;
+                }
+            }
         });
     }
 
@@ -301,8 +374,8 @@ class Game {
         const minTravelX = Math.max(this.rail.x - railHalf + 35, 45);
         const maxTravelX = Math.min(this.rail.x + railHalf - 35, this.width - 45);
         const span = Math.max(80, maxTravelX - minTravelX);
-
-        this.cards = this.cardDefinitions.map((def, i) => {
+        const cardDefs = this.getLevelCardDefinitions(this.level);
+        this.cards = cardDefs.map((def, i) => {
             // Vị trí xuất phát rải đều trên thanh
             const startX = minTravelX + (i / 3) * span;
 

@@ -13,15 +13,12 @@ Game arcade bắn súng cắt dây treo thẻ bài trên nền tảng **HTML5 Ca
 
 ---
 
-## 🖼️ Cách Thay Thẻ Bằng Hình Ảnh Tự Chọn
-Bạn có thể tự thay 4 thẻ bài bằng bất kỳ ảnh nào bạn thích (ảnh meme, anime, logo, avatar,...):
-1. Chuẩn bị 4 file ảnh và chép vào thư mục `assets/` với đúng tên sau:
-   - `assets/card1.png` (thay cho thẻ thứ 1)
-   - `assets/card2.png` (thay cho thẻ thứ 2)
-   - `assets/card3.png` (thay cho thẻ thứ 3)
-   - `assets/card4.png` (thay cho thẻ thứ 4)
-2. **Kích thước khuyến nghị**: Chuẩn **156 x 222 px** (hoặc tỉ lệ 2:3 như `312x444 px`). Định dạng: `.jpg`, `.png`, `.webp`.
-3. Game sẽ tự động nạp ảnh (hỗ trợ cả `.jpg` và `.png`), bo tròn góc 12px và bọc viền neon phát sáng. Nếu chưa có ảnh, game tự động vẽ quân bài mặc định!
+## 🖼️ Cách Thêm Ảnh & Cơ Chế Random Ảnh Qua Các Màn
+Bạn có thể thêm nhiều ảnh tùy thích vào game (ảnh meme, anime, idol, avatar,...):
+1. Chép các file ảnh vào thư mục `assets/` theo cú pháp đặt tên: `card1.jpg`, `card2.jpg`, `card3.jpg`,... đến `card11.jpg`.
+2. **Thuật toán xoay tua không bao giờ trùng ảnh**: Áp dụng công thức `(level % 11) ± i` cho 4 thẻ (với $i = 0, 1, 2, 3$). Màn 1 bắt đầu đẹp mắt với thẻ 1, 2, 3, 4 và tăng tiến xoay vòng qua các màn tiếp theo mà không bao giờ bị trùng lặp!
+3. **Kích thước khuyến nghị**: Chuẩn **156 x 222 px** (hoặc tỉ lệ 2:3 như `312x444 px`). Hỗ trợ các định dạng: `.jpg`, `.png`, `.webp`.
+4. Game sẽ tự động căn giữa tỉ lệ (`object-fit: cover`), bo tròn góc 12px và bọc viền neon phát sáng theo màu sắc rực rỡ!
 
 ---
 
