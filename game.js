@@ -253,12 +253,34 @@ class Game {
         this.bdayAvatarImg = document.getElementById('bday-avatar-img');
         this.bdayRecipient = document.getElementById('bday-recipient');
         this.bdayWishText = document.getElementById('bday-wish-text');
+        this.bdayCursor = document.getElementById('bday-cursor');
+        this.bdayPushItBtn = document.getElementById('bday-push-it-btn');
         this.birthdayCandle = document.getElementById('birthday-candle');
         this.candleFlame = document.getElementById('candle-flame');
         this.blowCandleBtn = document.getElementById('blow-candle-btn');
         this.wishGrantedMsg = document.getElementById('wish-granted-msg');
         this.closeBdayBtn = document.getElementById('close-bday-btn');
         this.replayWishBtn = document.getElementById('replay-wish-btn');
+
+        // Birthday Step 3 (Màn thổi bánh 4 thẻ xung quanh 1 thẻ bánh)
+        this.bdayCakeStep = document.getElementById('bday-cake-step');
+        this.cakeCardCenter = document.getElementById('cake-card-center');
+        this.cakeImgCenter = document.getElementById('cake-img-center');
+        this.cakeCenterFlame = document.getElementById('cake-center-flame');
+        this.blowCakeBtn = document.getElementById('blow-cake-btn');
+        this.cakeGrantedMsg = document.getElementById('cake-granted-msg');
+        this.closeCakeBtn = document.getElementById('close-cake-btn');
+
+        // Cấu hình các thẻ cho Màn Thổi Bánh Sinh Nhật (Bạn có thể đổi ảnh tại đây)
+        this.cakeScreenConfig = {
+            cardTop: 'assets/card3.jpg',     // Thẻ phía trên
+            cardLeft: 'assets/card4.jpg',    // Thẻ bên trái
+            cardRight: 'assets/card5.jpg',   // Thẻ bên phải
+            cardBottom: 'assets/card6.jpg',  // Thẻ phía dưới
+            cakeBefore: 'assets/card1.jpg',  // Ảnh bánh sinh nhật LÚC CHƯA THỔI
+            cakeAfter: 'assets/card2.jpg'    // Ảnh bánh sinh nhật SAU KHI THỔI
+        };
+        this.cakeBlown = false;
 
         // Cấu hình lời chúc sinh nhật (Bạn có thể tùy ý sửa thông tin ở đây)
         this.birthdayConfig = {
@@ -588,6 +610,32 @@ class Game {
                 this.closeBirthdaySurprise();
             });
         }
+        if (this.bdayPushItBtn) {
+            this.bdayPushItBtn.addEventListener('click', () => {
+                this.goToCakeStep();
+            });
+        }
+        if (this.blowCakeBtn) {
+            this.blowCakeBtn.addEventListener('click', () => {
+                if (this.cakeBlown) {
+                    this.closeBirthdaySurprise();
+                } else {
+                    this.blowCake();
+                }
+            });
+        }
+        if (this.cakeCardCenter) {
+            this.cakeCardCenter.addEventListener('click', () => {
+                if (!this.cakeBlown) {
+                    this.blowCake();
+                }
+            });
+        }
+        if (this.closeCakeBtn) {
+            this.closeCakeBtn.addEventListener('click', () => {
+                this.closeBirthdaySurprise();
+            });
+        }
         if (this.replayWishBtn) {
             this.replayWishBtn.addEventListener('click', () => {
                 this.replayWish();
@@ -595,7 +643,7 @@ class Game {
         }
         if (this.birthdayModal) {
             this.birthdayModal.addEventListener('click', (e) => {
-                if (e.target === this.birthdayModal || e.target === this.bdayCardStep) {
+                if (e.target === this.birthdayModal || e.target === this.bdayCardStep || e.target === this.bdayCakeStep) {
                     this.closeBirthdaySurprise();
                 }
             });
@@ -1021,6 +1069,9 @@ class Game {
         // Reset về Bước 1: Hộp quà 3D
         if (this.bdayGiftStep) this.bdayGiftStep.classList.remove('hidden');
         if (this.bdayCardStep) this.bdayCardStep.classList.add('hidden');
+        if (this.bdayCakeStep) this.bdayCakeStep.classList.add('hidden');
+        if (this.bdayPushItBtn) this.bdayPushItBtn.classList.add('hidden');
+        if (this.bdayCursor) this.bdayCursor.style.display = 'inline-block';
 
         const giftWrapper = document.getElementById('gift-box-click');
         if (giftWrapper) {
@@ -1085,6 +1136,9 @@ class Game {
         if (!this.bdayWishText) return;
         if (this.typewriterTimer) clearInterval(this.typewriterTimer);
 
+        if (this.bdayPushItBtn) this.bdayPushItBtn.classList.add('hidden');
+        if (this.bdayCursor) this.bdayCursor.style.display = 'inline-block';
+
         this.bdayWishText.textContent = '';
         const text = this.birthdayConfig.wishes;
         let charIndex = 0;
@@ -1096,8 +1150,84 @@ class Game {
             } else {
                 clearInterval(this.typewriterTimer);
                 this.typewriterTimer = null;
+                if (this.bdayCursor) this.bdayCursor.style.display = 'none';
+                if (this.bdayPushItBtn) {
+                    this.bdayPushItBtn.classList.remove('hidden');
+                }
             }
         }, 36);
+    }
+
+    goToCakeStep() {
+        if (this.bdayCardStep) this.bdayCardStep.classList.add('hidden');
+        if (this.bdayCakeStep) {
+            this.bdayCakeStep.classList.remove('hidden');
+            this.resetCakeStep();
+        }
+    }
+
+    resetCakeStep() {
+        this.cakeBlown = false;
+        if (this.cakeCenterFlame) {
+            this.cakeCenterFlame.classList.remove('extinguished');
+        }
+        if (this.cakeImgCenter) {
+            this.cakeImgCenter.src = this.cakeScreenConfig.cakeBefore;
+            this.cakeImgCenter.style.opacity = '1';
+            this.cakeImgCenter.style.transform = 'none';
+        }
+        if (this.blowCakeBtn) {
+            this.blowCakeBtn.textContent = 'push it';
+            this.blowCakeBtn.style.display = 'inline-block';
+        }
+        if (this.cakeGrantedMsg) {
+            this.cakeGrantedMsg.classList.add('hidden');
+        }
+
+        const imgTop = document.getElementById('cake-img-top');
+        const imgLeft = document.getElementById('cake-img-left');
+        const imgRight = document.getElementById('cake-img-right');
+        const imgBottom = document.getElementById('cake-img-bottom');
+        if (imgTop) imgTop.src = this.cakeScreenConfig.cardTop;
+        if (imgLeft) imgLeft.src = this.cakeScreenConfig.cardLeft;
+        if (imgRight) imgRight.src = this.cakeScreenConfig.cardRight;
+        if (imgBottom) imgBottom.src = this.cakeScreenConfig.cardBottom;
+    }
+
+    blowCake() {
+        if (this.cakeBlown) return;
+        this.cakeBlown = true;
+
+        // Âm thanh thổi nến
+        this.sound.playBlowCandle();
+
+        // Tắt ngọn lửa
+        if (this.cakeCenterFlame) {
+            this.cakeCenterFlame.classList.add('extinguished');
+        }
+
+        // Đổi ảnh bánh sinh nhật sang ảnh mới với hiệu ứng lật mượt mà
+        if (this.cakeImgCenter) {
+            this.cakeImgCenter.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+            this.cakeImgCenter.style.opacity = '0';
+            this.cakeImgCenter.style.transform = 'scale(0.85) rotate(4deg)';
+
+            setTimeout(() => {
+                this.cakeImgCenter.src = this.cakeScreenConfig.cakeAfter;
+                this.cakeImgCenter.style.opacity = '1';
+                this.cakeImgCenter.style.transform = 'scale(1) rotate(0deg)';
+            }, 250);
+        }
+
+        // Hiện thông điệp ước nguyện
+        if (this.cakeGrantedMsg) {
+            this.cakeGrantedMsg.classList.remove('hidden');
+        }
+
+        // Đổi nút thành "Tiếp Tục 🎯" để người dùng bấm quay lại chơi
+        if (this.blowCakeBtn) {
+            this.blowCakeBtn.textContent = 'Tiếp Tục 🎯';
+        }
     }
 
     blowCandle() {

@@ -652,117 +652,171 @@ html, body {
     50% { opacity: 0; }
 }
 
-/* Bánh Kem & Cây Nến Tương Tác */
-.bday-cake-box {
-    margin-bottom: 18px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.cake-graphic {
-    position: relative;
-    width: 60px;
-    height: 48px;
-    margin-bottom: 12px;
-}
-
-.candle {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 6px;
-    height: 18px;
-    background: repeating-linear-gradient(45deg, #f43f5e, #f43f5e 3px, #fff 3px, #fff 6px);
-    border-radius: 3px;
-}
-
-.candle-flame {
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 10px;
-    height: 14px;
-    background: radial-gradient(circle, #fef08a 0%, #f59e0b 60%, #ea580c 100%);
-    border-radius: 50% 50% 20% 20%;
-    box-shadow: 0 0 12px #f59e0b, 0 0 20px #ea580c;
-    animation: flameFlicker 0.25s infinite alternate;
-    transition: all 0.3s ease;
-}
-
-@keyframes flameFlicker {
-    0% { transform: translateX(-50%) scale(1) rotate(-2deg); }
-    100% { transform: translateX(-50%) scale(1.1) rotate(2deg); }
-}
-
-.candle-flame.extinguished {
-    transform: translateX(-50%) scale(0);
-    opacity: 0;
-}
-
-.cake-frosting {
-    position: absolute;
-    bottom: 18px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 44px;
-    height: 12px;
-    background: #ec4899;
-    border-radius: 8px 8px 3px 3px;
-    box-shadow: 0 2px 6px rgba(236, 72, 153, 0.5);
-}
-
-.cake-body {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 54px;
-    height: 20px;
-    background: #fbbf24;
-    border-radius: 4px 4px 6px 6px;
-}
-
-.blow-btn {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: #000;
-    border: none;
-    border-radius: 20px;
-    padding: 8px 18px;
-    font-size: 13px;
+/* Nút Push It đơn giản bên dưới lời chúc */
+.bday-push-it-btn {
+    display: inline-block;
+    padding: 11px 32px;
+    background: linear-gradient(135deg, #f43f5e, #fbbf24);
+    color: #ffffff;
+    font-size: 15px;
     font-weight: 800;
+    letter-spacing: 0.5px;
+    border: none;
+    border-radius: 24px;
     cursor: pointer;
-    box-shadow: 0 3px 12px rgba(245, 158, 11, 0.4);
+    box-shadow: 0 4px 18px rgba(244, 63, 94, 0.45);
     transition: all 0.2s ease;
+    animation: pushBtnPopIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin: 6px auto 4px auto;
 }
 
-.blow-btn:active {
+.bday-push-it-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(245, 158, 11, 0.6);
+    filter: brightness(1.05);
+}
+
+.bday-push-it-btn:active {
     transform: scale(0.95);
 }
 
-.wish-granted {
-    margin-top: 10px;
-    color: #34d399;
-    font-size: 12px;
+@keyframes pushBtnPopIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.7) translateY(12px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Bánh Kem & Cây Nến Tương Tác */
+/* --- Bước 3: Màn Thổi Bánh Sinh Nhật --- */
+.bday-cake-container {
+    max-width: 350px;
+    width: 92%;
+    padding: 24px 16px 20px 16px;
+}
+
+.bday-cake-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 78px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    margin: 16px auto;
+}
+
+.cake-card-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(251, 191, 36, 0.4);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.cake-grid-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Định vị 4 thẻ xung quanh và 1 thẻ bánh sinh nhật ở giữa */
+.cake-card-top {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.cake-card-left {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.cake-card-center {
+    grid-column: 2;
+    grid-row: 2;
+    transform: scale(1.18);
+    z-index: 5;
+    border: 3px solid #fbbf24;
+    border-radius: 14px;
+    box-shadow: 0 0 25px rgba(251, 191, 36, 0.8), 0 8px 24px rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+    overflow: visible;
+}
+
+.cake-card-center .cake-grid-img {
+    border-radius: 11px;
+}
+
+.cake-card-center:hover {
+    transform: scale(1.22);
+    box-shadow: 0 0 35px rgba(251, 191, 36, 0.95), 0 8px 28px rgba(0, 0, 0, 0.7);
+}
+
+.cake-card-center:active {
+    transform: scale(1.12);
+}
+
+.cake-card-right {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.cake-card-bottom {
+    grid-column: 2;
+    grid-row: 3;
+}
+
+/* Ngọn nến lung linh trên thẻ bánh ở giữa */
+.cake-flame {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 22px;
+    filter: drop-shadow(0 0 8px #f59e0b);
+    animation: flameBob 0.8s ease-in-out infinite alternate;
+    z-index: 10;
+    pointer-events: none;
+    transition: all 0.35s ease;
+}
+
+@keyframes flameBob {
+    0% {
+        transform: translateX(-50%) scale(0.92) rotate(-3deg);
+        filter: drop-shadow(0 0 8px #f59e0b);
+    }
+    100% {
+        transform: translateX(-50%) scale(1.08) rotate(3deg);
+        filter: drop-shadow(0 0 14px #fbbf24);
+    }
+}
+
+.cake-flame.extinguished {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-18px) scale(0.3);
+}
+
+/* Thông điệp sau khi thổi */
+.cake-granted-msg {
+    margin-top: 14px;
+    font-size: 13px;
     font-weight: 700;
+    color: #34d399;
+    text-shadow: 0 2px 8px rgba(52, 211, 153, 0.5);
     animation: wishGrantedIn 0.4s ease-out;
 }
 
 @keyframes wishGrantedIn {
     0% { opacity: 0; transform: translateY(6px); }
     100% { opacity: 1; transform: translateY(0); }
-}
-
-.bday-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.bday-continue-btn {
-    background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%);
-    box-shadow: 0 4px 15px rgba(6, 182, 212, 0.45);
 }
 
