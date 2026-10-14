@@ -73,8 +73,75 @@
                     </div>
                 </div>
                 <div class="modal-actions">
+                    <button id="open-wish-btn" class="wish-btn hidden">push it</button>
                     <button id="next-level-btn" class="primary-btn">Màn tiếp</button>
                     <button id="replay-btn" class="secondary-btn">Chơi Lại Từ Đầu</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Birthday Surprise Modal (Phương án A) -->
+        <div id="birthday-modal" class="modal-overlay hidden">
+            <div id="bday-decorations" class="bday-decorations"></div>
+
+            <!-- Step 1: Interactive 3D Gift Box -->
+            <div id="bday-gift-step" class="bday-step">
+                <div class="bday-gift-wrapper" id="gift-box-click">
+                    <div class="gift-box-glow"></div>
+                    <div class="gift-box">
+                        <div class="gift-lid">
+                            <div class="gift-bow"></div>
+                            <div class="gift-ribbon-lid"></div>
+                        </div>
+                        <div class="gift-body">
+                            <div class="gift-ribbon-v"></div>
+                            <div class="gift-ribbon-h"></div>
+                        </div>
+                    </div>
+                    <div class="gift-prompt">
+                        
+                        <span class="prompt-text">push it!</span>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: The Birthday Card & Wish -->
+            <div id="bday-card-step" class="bday-step hidden">
+                <div class="bday-card-container">
+                    <div class="bday-card-header">
+                        <div class="bday-avatar-wrapper">
+                            <img id="bday-avatar-img" src="assets/card1.jpg" alt="Avatar" class="bday-avatar">
+                            <div class="bday-crown">👑</div>
+                        </div>
+                        <span class="bday-tag">HAPPY BIRTHDAY!</span>
+                        <h2 id="bday-recipient" class="bday-name">Bạn Tuyệt Vời 💖</h2>
+                    </div>
+
+                    <!-- Typewriter Message Body -->
+                    <div class="bday-message-box">
+                        <p id="bday-wish-text" class="bday-wish-text"></p>
+                        <span id="bday-cursor" class="bday-cursor">|</span>
+                    </div>
+
+                    <!-- Interactive Cake & Candle -->
+                    <div class="bday-cake-box">
+                        <div class="cake-graphic">
+                            <div class="candle" id="birthday-candle">
+                                <div class="candle-flame" id="candle-flame"></div>
+                            </div>
+                            <div class="cake-frosting"></div>
+                            <div class="cake-body"></div>
+                        </div>
+                        <button id="blow-candle-btn" class="blow-btn">🎂 Thổi Nến Ước Nguyện</button>
+                        <div id="wish-granted-msg" class="wish-granted hidden">✨ Điều ước đã bay lên trời! Chúc mọi ước mơ thành hiện thực! ✨</div>
+                    </div>
+
+                    <!-- Modal Actions -->
+                    <div class="bday-actions">
+                        <button id="close-bday-btn" class="primary-btn bday-continue-btn">🎯 Tiếp Tục Bắn Thẻ</button>
+                        <button id="replay-wish-btn" class="secondary-btn">💌 Xem Lại Lời Chúc</button>
+                    </div>
                 </div>
             </div>
         </div>

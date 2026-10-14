@@ -22,6 +22,28 @@ Bạn có thể thêm nhiều ảnh tùy thích vào game (ảnh meme, anime, id
 
 ---
 
+## 🎂 Màn Chúc Mừng Sinh Nhật Bất Ngờ (Birthday Surprise)
+Khi người chơi chiến thắng ở các màn có `level > 1`, bảng chiến thắng sẽ xuất hiện nút phát sáng:
+> `🎁 Mở Lời Chúc Bất Ngờ ✨`
+
+### Kịch bản tương tác (Phương án A):
+1. **Chạm mở Hộp quà 3D**: Nắp hộp quà bung mở, pháo hoa bay lượn và bài hát **Happy Birthday To You** (giai điệu chuông pha lê Web Audio) tự động ngân vang!
+2. **Thiệp chúc mừng sang trọng**: Khung avatar đội vương miện 👑 vàng lấp lánh và lời chúc được **gõ từng ký tự (Typewriter)** chân thành, cảm xúc.
+3. **Thổi Nến Ước Nguyện**: Bấm nút `🎂 Thổi Nến Ước Nguyện` để dập tắt ngọn nến lung linh 🕯️ và nhận thông điệp ước nguyện thành hiện thực!
+
+### Cách sửa lời chúc và tên người nhận:
+Mở file `game.js`, tìm đoạn `this.birthdayConfig` (khoảng dòng 265) và thay đổi theo ý bạn:
+```javascript
+this.birthdayConfig = {
+    recipientName: "Tên Người Nhận 💖",
+    avatarImg: "assets/card1.jpg", 
+    title: "HAPPY BIRTHDAY! 🎂",
+    wishes: "Chúc mừng sinh nhật! 💖 Chúc bạn bước sang tuổi mới luôn ngập tràn tiếng cười, luôn rạng rỡ, xinh đẹp và mọi ước mơ đều trở thành hiện thực nhé! ✨🎂🎉"
+};
+```
+
+---
+
 ## 🚀 Hướng Dẫn Đưa Lên GitHub & Bật Link Chơi Trên Điện Thoại (GitHub Pages)
 
 Để gửi link cho bạn bè hoặc người khác mở trên điện thoại chơi ngay (không cần cài app):

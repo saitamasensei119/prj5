@@ -117,6 +117,110 @@ class SoundFX {
             osc.stop(now + 0.3);
         });
     }
+
+    playGiftOpen() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const chimeNotes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+        chimeNotes.forEach((freq, idx) => {
+            const now = this.ctx.currentTime + idx * 0.08;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now);
+            gain.gain.setValueAtTime(0.22, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.42);
+        });
+    }
+
+    playBlowCandle() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const notes = [659.25, 880, 1046.50, 1318.51];
+        notes.forEach((freq, idx) => {
+            const t = now + 0.12 + idx * 0.09;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, t);
+            gain.gain.setValueAtTime(0.25, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(t);
+            osc.stop(t + 0.52);
+        });
+    }
+
+    playHappyBirthday() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        // "Happy Birthday To You" Music Box Melodic Sequence (Key of C)
+        const notes = [
+            // Happy Birthday to you
+            { f: 392.00, d: 0.35, g: 0.45 },
+            { f: 392.00, d: 0.25, g: 0.35 },
+            { f: 440.00, d: 0.55, g: 0.70 },
+            { f: 392.00, d: 0.55, g: 0.70 },
+            { f: 523.25, d: 0.55, g: 0.70 },
+            { f: 493.88, d: 0.90, g: 1.10 },
+
+            // Happy Birthday to you
+            { f: 392.00, d: 0.35, g: 0.45 },
+            { f: 392.00, d: 0.25, g: 0.35 },
+            { f: 440.00, d: 0.55, g: 0.70 },
+            { f: 392.00, d: 0.55, g: 0.70 },
+            { f: 587.33, d: 0.55, g: 0.70 },
+            { f: 523.25, d: 0.90, g: 1.10 },
+
+            // Happy Birthday dear friend
+            { f: 392.00, d: 0.35, g: 0.45 },
+            { f: 392.00, d: 0.25, g: 0.35 },
+            { f: 783.99, d: 0.55, g: 0.70 },
+            { f: 659.25, d: 0.55, g: 0.70 },
+            { f: 523.25, d: 0.55, g: 0.70 },
+            { f: 493.88, d: 0.55, g: 0.70 },
+            { f: 440.00, d: 0.90, g: 1.10 },
+
+            // Happy Birthday to you!
+            { f: 698.46, d: 0.35, g: 0.45 },
+            { f: 698.46, d: 0.25, g: 0.35 },
+            { f: 659.25, d: 0.55, g: 0.70 },
+            { f: 523.25, d: 0.55, g: 0.70 },
+            { f: 587.33, d: 0.55, g: 0.70 },
+            { f: 523.25, d: 1.20, g: 1.40 },
+        ];
+
+        let offset = 0;
+        notes.forEach(item => {
+            const startTime = this.ctx.currentTime + offset;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(item.f, startTime);
+
+            gain.gain.setValueAtTime(0.24, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, startTime + item.d);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.start(startTime);
+            osc.stop(startTime + item.d + 0.05);
+
+            offset += item.g;
+        });
+    }
 }
 
 // --- Main Game Engine ---
@@ -138,6 +242,32 @@ class Game {
         this.victoryModal = document.getElementById('victory-modal');
         this.nextLevelBtn = document.getElementById('next-level-btn');
         this.replayBtn = document.getElementById('replay-btn');
+        this.openWishBtn = document.getElementById('open-wish-btn');
+
+        // Birthday Surprise Modal elements (Phương án A)
+        this.birthdayModal = document.getElementById('birthday-modal');
+        this.bdayDecorations = document.getElementById('bday-decorations');
+        this.bdayGiftStep = document.getElementById('bday-gift-step');
+        this.giftBoxClick = document.getElementById('gift-box-click');
+        this.bdayCardStep = document.getElementById('bday-card-step');
+        this.bdayAvatarImg = document.getElementById('bday-avatar-img');
+        this.bdayRecipient = document.getElementById('bday-recipient');
+        this.bdayWishText = document.getElementById('bday-wish-text');
+        this.birthdayCandle = document.getElementById('birthday-candle');
+        this.candleFlame = document.getElementById('candle-flame');
+        this.blowCandleBtn = document.getElementById('blow-candle-btn');
+        this.wishGrantedMsg = document.getElementById('wish-granted-msg');
+        this.closeBdayBtn = document.getElementById('close-bday-btn');
+        this.replayWishBtn = document.getElementById('replay-wish-btn');
+
+        // Cấu hình lời chúc sinh nhật (Bạn có thể tùy ý sửa thông tin ở đây)
+        this.birthdayConfig = {
+            recipientName: "Bạn Tuyệt Vời 💖",
+            avatarImg: "assets/card1.jpg",
+            title: "HAPPY BIRTHDAY! 🎂",
+            wishes: "Chúc mừng sinh nhật! 💖 Bước sang tuổi mới, chúc bạn luôn ngập tràn niềm vui, nụ cười rạng rỡ trên môi, thật nhiều may mắn, sức khỏe và mọi điều ước đều trở thành hiện thực nhé! ✨🎂🎉"
+        };
+        this.typewriterTimer = null;
 
         // Modal stats
         this.finalScoreEl = document.getElementById('final-score');
@@ -360,6 +490,7 @@ class Game {
         this.particles = [];
         this.floatingTexts = [];
         this.victoryModal.classList.add('hidden');
+        if (this.birthdayModal) this.birthdayModal.classList.add('hidden');
         this.startCountdown = 1.0; // Đứng yên 1 giây lúc mới vào
 
         // Kích thước thẻ chuẩn xác theo yêu cầu (156 x 222 px)
@@ -435,6 +566,33 @@ class Game {
         this.replayBtn.addEventListener('click', () => {
             this.resetGame(false);
         });
+
+        // Birthday surprise interactions (Phương án A)
+        if (this.openWishBtn) {
+            this.openWishBtn.addEventListener('click', () => {
+                this.openBirthdaySurprise();
+            });
+        }
+        if (this.giftBoxClick) {
+            this.giftBoxClick.addEventListener('click', () => {
+                this.unwrapGift();
+            });
+        }
+        if (this.blowCandleBtn) {
+            this.blowCandleBtn.addEventListener('click', () => {
+                this.blowCandle();
+            });
+        }
+        if (this.closeBdayBtn) {
+            this.closeBdayBtn.addEventListener('click', () => {
+                this.closeBirthdaySurprise();
+            });
+        }
+        if (this.replayWishBtn) {
+            this.replayWishBtn.addEventListener('click', () => {
+                this.replayWish();
+            });
+        }
 
         // Touch & Mouse Input Handlers
         const getCanvasPos = (evt) => {
@@ -832,8 +990,158 @@ class Game {
             this.finalTimeEl.textContent = `${elapsedTime}s`;
 
             setTimeout(() => {
+                // Hiển thị nút "Mở Lời Chúc Bất Ngờ" khi level > 1 theo đúng yêu cầu
+                if (this.openWishBtn) {
+                    if (this.level > 1) {
+                        this.openWishBtn.classList.remove('hidden');
+                    } else {
+                        this.openWishBtn.classList.add('hidden');
+                    }
+                }
                 this.victoryModal.classList.remove('hidden');
             }, 600);
+        }
+    }
+
+    // --- Kịch Bản Mừng Sinh Nhật (Phương Án A) ---
+    openBirthdaySurprise() {
+        if (!this.birthdayModal) return;
+        this.victoryModal.classList.add('hidden');
+        this.birthdayModal.classList.remove('hidden');
+
+        // Reset về Bước 1: Hộp quà 3D
+        if (this.bdayGiftStep) this.bdayGiftStep.classList.remove('hidden');
+        if (this.bdayCardStep) this.bdayCardStep.classList.add('hidden');
+
+        const lid = document.querySelector('.gift-lid');
+        if (lid) {
+            lid.style.transform = 'none';
+            lid.style.opacity = '1';
+        }
+
+        if (this.candleFlame) this.candleFlame.classList.remove('extinguished');
+        if (this.blowCandleBtn) this.blowCandleBtn.style.display = 'block';
+        if (this.wishGrantedMsg) this.wishGrantedMsg.classList.add('hidden');
+
+        // Tạo bóng bay & pháo hoa bay lượn ở background
+        this.spawnBirthdayDecorations();
+    }
+
+    spawnBirthdayDecorations() {
+        if (!this.bdayDecorations) return;
+        this.bdayDecorations.innerHTML = '';
+        const emojis = ['🎈', '🎉', '✨', '🎂', '💖', '⭐', '🎁', '🍰', '🌸'];
+        for (let i = 0; i < 22; i++) {
+            const span = document.createElement('span');
+            span.className = 'bday-float-emoji';
+            span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            span.style.left = `${Math.random() * 92}%`;
+            span.style.animationDelay = `${Math.random() * 4}s`;
+            span.style.animationDuration = `${3.2 + Math.random() * 2.8}s`;
+            this.bdayDecorations.appendChild(span);
+        }
+    }
+
+    unwrapGift() {
+        this.sound.playGiftOpen();
+
+        // Hiệu ứng mở nắp hộp quà
+        const lid = document.querySelector('.gift-lid');
+        if (lid) {
+            lid.style.transform = 'translateY(-60px) rotate(-25deg)';
+            lid.style.opacity = '0';
+        }
+
+        // Chờ 0.4s rồi chuyển sang Bước 2: Tấm thiệp sinh nhật
+        setTimeout(() => {
+            if (this.bdayGiftStep) this.bdayGiftStep.classList.add('hidden');
+            if (this.bdayCardStep) {
+                this.bdayCardStep.classList.remove('hidden');
+            }
+
+            // Gán dữ liệu người nhận
+            if (this.bdayRecipient) this.bdayRecipient.textContent = this.birthdayConfig.recipientName;
+            if (this.bdayAvatarImg) this.bdayAvatarImg.src = this.birthdayConfig.avatarImg;
+
+            // Bật giai điệu Happy Birthday
+            this.sound.playHappyBirthday();
+
+            // Chạy hiệu ứng Typewriter cho lời chúc
+            this.startTypewriterWishes();
+
+            // Bắn đợt pháo hoa lấp lánh ăn mừng
+            this.spawnCelebrationConfetti();
+        }, 400);
+    }
+
+    startTypewriterWishes() {
+        if (!this.bdayWishText) return;
+        if (this.typewriterTimer) clearInterval(this.typewriterTimer);
+
+        this.bdayWishText.textContent = '';
+        const text = this.birthdayConfig.wishes;
+        let charIndex = 0;
+
+        this.typewriterTimer = setInterval(() => {
+            if (charIndex < text.length) {
+                this.bdayWishText.textContent += text.charAt(charIndex);
+                charIndex++;
+            } else {
+                clearInterval(this.typewriterTimer);
+                this.typewriterTimer = null;
+            }
+        }, 36);
+    }
+
+    blowCandle() {
+        if (!this.candleFlame) return;
+        this.candleFlame.classList.add('extinguished');
+        this.sound.playBlowCandle();
+
+        if (this.blowCandleBtn) {
+            this.blowCandleBtn.style.display = 'none';
+        }
+        if (this.wishGrantedMsg) {
+            this.wishGrantedMsg.classList.remove('hidden');
+        }
+
+        // Bắn thêm đợt pháo hoa lấp lánh ăn mừng
+        this.spawnCelebrationConfetti();
+    }
+
+    replayWish() {
+        // Thắp lại nến
+        if (this.candleFlame) this.candleFlame.classList.remove('extinguished');
+        if (this.blowCandleBtn) this.blowCandleBtn.style.display = 'block';
+        if (this.wishGrantedMsg) this.wishGrantedMsg.classList.add('hidden');
+
+        // Bật lại bài Happy Birthday & Typewriter
+        this.sound.playHappyBirthday();
+        this.startTypewriterWishes();
+    }
+
+    closeBirthdaySurprise() {
+        if (this.birthdayModal) this.birthdayModal.classList.add('hidden');
+        if (this.victoryModal) this.victoryModal.classList.remove('hidden');
+        if (this.typewriterTimer) {
+            clearInterval(this.typewriterTimer);
+            this.typewriterTimer = null;
+        }
+    }
+
+    spawnCelebrationConfetti() {
+        for (let i = 0; i < 60; i++) {
+            const colors = ['#f59e0b', '#ec4899', '#06b6d4', '#10b981', '#f43f5e', '#a855f7'];
+            this.particles.push({
+                x: this.width * (0.15 + Math.random() * 0.7),
+                y: this.height * 0.45,
+                vx: (Math.random() - 0.5) * 10,
+                vy: -Math.random() * 8 - 3,
+                radius: Math.random() * 4 + 2,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                alpha: 1,
+                decay: 0.014
+            });
         }
     }
 
