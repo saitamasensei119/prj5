@@ -271,14 +271,18 @@ class Game {
         this.cakeGrantedMsg = document.getElementById('cake-granted-msg');
         this.closeCakeBtn = document.getElementById('close-cake-btn');
 
-        // Cấu hình các thẻ cho Màn Thổi Bánh Sinh Nhật (Bạn có thể đổi ảnh tại đây)
+        // Cấu hình các thẻ cho Màn Thổi Bánh Sinh Nhật (4 người ngồi đằng sau cái bánh)
+        // Bố cục:
+        // 0 1 0 1 0  -> Hàng 1: person2, person3
+        // 1 0 0 0 1  -> Hàng 2: person1, person4
+        // 0 0 1 0 0  -> Hàng 3: cakeBefore (bánh ở giữa phía trước)
         this.cakeScreenConfig = {
-            cardTop: 'assets/card3.jpg',     // Thẻ phía trên
-            cardLeft: 'assets/card4.jpg',    // Thẻ bên trái
-            cardRight: 'assets/card5.jpg',   // Thẻ bên phải
-            cardBottom: 'assets/card6.jpg',  // Thẻ phía dưới
-            cakeBefore: 'assets/card1.jpg',  // Ảnh bánh sinh nhật LÚC CHƯA THỔI
-            cakeAfter: 'assets/card2.jpg'    // Ảnh bánh sinh nhật SAU KHI THỔI
+            person1: 'assets/card3.jpg',    // Người 1 (Hàng 2, Cột 1 - Ngoài cùng bên trái)
+            person2: 'assets/card4.jpg',    // Người 2 (Hàng 1, Cột 2 - Ở giữa bên trái)
+            person3: 'assets/card5.jpg',    // Người 3 (Hàng 1, Cột 4 - Ở giữa bên phải)
+            person4: 'assets/card6.jpg',    // Người 4 (Hàng 2, Cột 5 - Ngoài cùng bên phải)
+            cakeBefore: 'assets/card1.jpg', // Bánh sinh nhật LÚC CHƯA THỔI (Hàng 3, Cột 3)
+            cakeAfter: 'assets/card2.jpg'   // Bánh sinh nhật SAU KHI THỔI
         };
         this.cakeBlown = false;
 
@@ -1184,14 +1188,14 @@ class Game {
             this.cakeGrantedMsg.classList.add('hidden');
         }
 
-        const imgTop = document.getElementById('cake-img-top');
-        const imgLeft = document.getElementById('cake-img-left');
-        const imgRight = document.getElementById('cake-img-right');
-        const imgBottom = document.getElementById('cake-img-bottom');
-        if (imgTop) imgTop.src = this.cakeScreenConfig.cardTop;
-        if (imgLeft) imgLeft.src = this.cakeScreenConfig.cardLeft;
-        if (imgRight) imgRight.src = this.cakeScreenConfig.cardRight;
-        if (imgBottom) imgBottom.src = this.cakeScreenConfig.cardBottom;
+        const imgP1 = document.getElementById('cake-img-p1');
+        const imgP2 = document.getElementById('cake-img-p2');
+        const imgP3 = document.getElementById('cake-img-p3');
+        const imgP4 = document.getElementById('cake-img-p4');
+        if (imgP1) imgP1.src = this.cakeScreenConfig.person1;
+        if (imgP2) imgP2.src = this.cakeScreenConfig.person2;
+        if (imgP3) imgP3.src = this.cakeScreenConfig.person3;
+        if (imgP4) imgP4.src = this.cakeScreenConfig.person4;
     }
 
     blowCake() {

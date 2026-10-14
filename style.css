@@ -695,29 +695,34 @@ html, body {
 /* --- Bước 3: Màn Thổi Bánh Sinh Nhật --- */
 .bday-cake-container {
     max-width: 350px;
-    width: 92%;
-    padding: 24px 16px 20px 16px;
+    width: 94%;
+    padding: 24px 12px 20px 12px;
 }
 
+/* Lưới 5 cột x 3 hàng đúng sơ đồ:
+   0 1 0 1 0  (Hàng 1: Người 2 ở cột 2, Người 3 ở cột 4)
+   1 0 0 0 1  (Hàng 2: Người 1 ở cột 1, Người 4 ở cột 5)
+   0 0 1 0 0  (Hàng 3: Bánh sinh nhật ở cột 3 phía trước)
+*/
 .bday-cake-grid {
     display: grid;
-    grid-template-columns: repeat(3, 78px);
-    grid-template-rows: repeat(3, 100px);
-    gap: 10px;
+    grid-template-columns: repeat(5, 54px);
+    grid-template-rows: repeat(3, 74px);
+    gap: 8px 6px;
     justify-content: center;
     align-items: center;
-    margin: 16px auto;
+    margin: 18px auto 24px auto;
 }
 
 .cake-card-wrapper {
     position: relative;
     width: 100%;
     height: 100%;
-    border-radius: 12px;
+    border-radius: 10px;
     overflow: hidden;
     background: rgba(255, 255, 255, 0.05);
-    border: 2px solid rgba(251, 191, 36, 0.4);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    border: 1.5px solid rgba(251, 191, 36, 0.45);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     transition: all 0.3s ease;
 }
 
@@ -729,50 +734,59 @@ html, body {
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* Định vị 4 thẻ xung quanh và 1 thẻ bánh sinh nhật ở giữa */
-.cake-card-top {
-    grid-column: 2;
-    grid-row: 1;
-}
-
-.cake-card-left {
+/* 4 người ngồi đằng sau (Hiệu ứng vòng cung chiều sâu) */
+.cake-card-p1 {
     grid-column: 1;
     grid-row: 2;
+    z-index: 1;
+    transform: rotate(5deg) translateY(-2px);
 }
 
-.cake-card-center {
+.cake-card-p2 {
     grid-column: 2;
+    grid-row: 1;
+    z-index: 1;
+    transform: rotate(2deg);
+}
+
+.cake-card-p3 {
+    grid-column: 4;
+    grid-row: 1;
+    z-index: 1;
+    transform: rotate(-2deg);
+}
+
+.cake-card-p4 {
+    grid-column: 5;
     grid-row: 2;
-    transform: scale(1.18);
-    z-index: 5;
-    border: 3px solid #fbbf24;
-    border-radius: 14px;
-    box-shadow: 0 0 25px rgba(251, 191, 36, 0.8), 0 8px 24px rgba(0, 0, 0, 0.6);
+    z-index: 1;
+    transform: rotate(-5deg) translateY(-2px);
+}
+
+/* Thẻ bánh sinh nhật ở hàng 3, cột 3 (Phía trước ở giữa) */
+.cake-card-center {
+    grid-column: 3;
+    grid-row: 3;
+    transform: scale(1.35) translateY(-8px);
+    z-index: 10;
+    border: 2.5px solid #fbbf24;
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(251, 191, 36, 0.85), 0 8px 22px rgba(0, 0, 0, 0.7);
     cursor: pointer;
     overflow: visible;
 }
 
 .cake-card-center .cake-grid-img {
-    border-radius: 11px;
+    border-radius: 10px;
 }
 
 .cake-card-center:hover {
-    transform: scale(1.22);
-    box-shadow: 0 0 35px rgba(251, 191, 36, 0.95), 0 8px 28px rgba(0, 0, 0, 0.7);
+    transform: scale(1.42) translateY(-10px);
+    box-shadow: 0 0 35px rgba(251, 191, 36, 1), 0 10px 25px rgba(0, 0, 0, 0.8);
 }
 
 .cake-card-center:active {
-    transform: scale(1.12);
-}
-
-.cake-card-right {
-    grid-column: 3;
-    grid-row: 2;
-}
-
-.cake-card-bottom {
-    grid-column: 2;
-    grid-row: 3;
+    transform: scale(1.28) translateY(-6px);
 }
 
 /* Ngọn nến lung linh trên thẻ bánh ở giữa */
