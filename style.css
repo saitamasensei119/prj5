@@ -167,6 +167,12 @@ html, body {
     pointer-events: none;
 }
 
+/* Ẩn hoàn toàn các phần tử có class hidden khác */
+.hidden:not(.modal-overlay) {
+    display: none !important;
+}
+
+
 .modal-card {
     background: linear-gradient(145deg, rgba(20, 27, 45, 0.95), rgba(11, 15, 28, 0.98));
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -316,6 +322,12 @@ html, body {
 
 /* Modal Overlay & Trang trí */
 #birthday-modal {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     background: rgba(10, 15, 30, 0.88);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
@@ -325,35 +337,7 @@ html, body {
 }
 
 .bday-decorations {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: 1;
-}
-
-.bday-float-emoji {
-    position: absolute;
-    font-size: 24px;
-    animation: floatUp 4.5s linear infinite;
-    opacity: 0.8;
-}
-
-@keyframes floatUp {
-    0% {
-        transform: translateY(100vh) scale(0.8) rotate(0deg);
-        opacity: 0;
-    }
-    20% {
-        opacity: 0.9;
-    }
-    80% {
-        opacity: 0.9;
-    }
-    100% {
-        transform: translateY(-20vh) scale(1.2) rotate(360deg);
-        opacity: 0;
-    }
+    display: none;
 }
 
 .bday-step {
@@ -363,6 +347,11 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: auto;
+}
+
+.bday-step.hidden {
+    display: none !important;
 }
 
 /* --- Bước 1: Hộp quà 3D tương tác --- */
@@ -373,6 +362,28 @@ html, body {
     cursor: pointer;
     user-select: none;
     animation: giftWobble 2.5s ease-in-out infinite;
+    transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bday-gift-wrapper.opening {
+    animation: none;
+    pointer-events: none;
+}
+
+.bday-gift-wrapper.opening .gift-lid {
+    transform: translateY(-90px) rotate(-35deg) scale(1.1);
+    opacity: 0;
+}
+
+.bday-gift-wrapper.opening .gift-prompt {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.bday-gift-wrapper.disappearing {
+    opacity: 0;
+    transform: scale(0.4) translateY(30px);
+    pointer-events: none;
 }
 
 @keyframes giftWobble {
@@ -407,7 +418,7 @@ html, body {
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(225, 29, 72, 0.6);
     z-index: 3;
-    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.35s ease;
 }
 
 .gift-bow {
@@ -494,6 +505,7 @@ html, body {
     font-weight: 700;
     font-size: 14px;
     animation: promptBlink 1.5s ease-in-out infinite alternate;
+    transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
 @keyframes promptBlink {
@@ -503,15 +515,49 @@ html, body {
 
 /* --- Bước 2: Tấm thiệp sinh nhật sang trọng --- */
 .bday-card-container {
+    position: relative;
     background: rgba(15, 23, 42, 0.94);
     border: 2px solid rgba(251, 191, 36, 0.6);
     border-radius: 24px;
-    padding: 24px 20px;
+    padding: 28px 20px 24px 20px;
     max-width: 350px;
     width: 92%;
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 35px rgba(245, 158, 11, 0.3);
     text-align: center;
     animation: cardPopIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin: auto;
+}
+
+.bday-card-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #cbd5e1;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
+    z-index: 5;
+    line-height: 1;
+}
+
+.bday-card-close:hover {
+    background: rgba(244, 63, 94, 0.85);
+    color: #fff;
+    border-color: rgba(244, 63, 94, 1);
+    transform: scale(1.1);
+}
+
+.bday-card-close:active {
+    transform: scale(0.92);
 }
 
 @keyframes cardPopIn {

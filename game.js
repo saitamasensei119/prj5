@@ -593,6 +593,13 @@ class Game {
                 this.replayWish();
             });
         }
+        if (this.birthdayModal) {
+            this.birthdayModal.addEventListener('click', (e) => {
+                if (e.target === this.birthdayModal || e.target === this.bdayCardStep) {
+                    this.closeBirthdaySurprise();
+                }
+            });
+        }
 
         // Touch & Mouse Input Handlers
         const getCanvasPos = (evt) => {
@@ -1009,50 +1016,51 @@ class Game {
         this.victoryModal.classList.add('hidden');
         this.birthdayModal.classList.remove('hidden');
 
+        this._isUnwrapping = false;
+
         // Reset về Bước 1: Hộp quà 3D
         if (this.bdayGiftStep) this.bdayGiftStep.classList.remove('hidden');
         if (this.bdayCardStep) this.bdayCardStep.classList.add('hidden');
 
+        const giftWrapper = document.getElementById('gift-box-click');
+        if (giftWrapper) {
+            giftWrapper.classList.remove('opening', 'disappearing');
+        }
+
         const lid = document.querySelector('.gift-lid');
         if (lid) {
-            lid.style.transform = 'none';
-            lid.style.opacity = '1';
+            lid.style.transform = '';
+            lid.style.opacity = '';
         }
 
         if (this.candleFlame) this.candleFlame.classList.remove('extinguished');
         if (this.blowCandleBtn) this.blowCandleBtn.style.display = 'block';
         if (this.wishGrantedMsg) this.wishGrantedMsg.classList.add('hidden');
-
-        // Tạo bóng bay & pháo hoa bay lượn ở background
-        this.spawnBirthdayDecorations();
     }
 
     spawnBirthdayDecorations() {
         if (!this.bdayDecorations) return;
         this.bdayDecorations.innerHTML = '';
-        const emojis = ['🎈', '🎉', '✨', '🎂', '💖', '⭐', '🎁', '🍰', '🌸'];
-        for (let i = 0; i < 22; i++) {
-            const span = document.createElement('span');
-            span.className = 'bday-float-emoji';
-            span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-            span.style.left = `${Math.random() * 92}%`;
-            span.style.animationDelay = `${Math.random() * 4}s`;
-            span.style.animationDuration = `${3.2 + Math.random() * 2.8}s`;
-            this.bdayDecorations.appendChild(span);
-        }
     }
 
     unwrapGift() {
+        if (this._isUnwrapping) return;
+        this._isUnwrapping = true;
+
         this.sound.playGiftOpen();
 
-        // Hiệu ứng mở nắp hộp quà
-        const lid = document.querySelector('.gift-lid');
-        if (lid) {
-            lid.style.transform = 'translateY(-60px) rotate(-25deg)';
-            lid.style.opacity = '0';
+        const giftWrapper = document.getElementById('gift-box-click');
+        if (giftWrapper) {
+            // Mở nắp hộp quà bay vút lên
+            giftWrapper.classList.add('opening');
+
+            // Hộp quà thu nhỏ và biến mất dần
+            setTimeout(() => {
+                giftWrapper.classList.add('disappearing');
+            }, 120);
         }
 
-        // Chờ 0.4s rồi chuyển sang Bước 2: Tấm thiệp sinh nhật
+        // Chờ 0.45s cho hộp quà biến mất hoàn toàn rồi chuyển sang Bước 2: Tấm thiệp sinh nhật xuất hiện chính giữa
         setTimeout(() => {
             if (this.bdayGiftStep) this.bdayGiftStep.classList.add('hidden');
             if (this.bdayCardStep) {
@@ -1069,9 +1077,8 @@ class Game {
             // Chạy hiệu ứng Typewriter cho lời chúc
             this.startTypewriterWishes();
 
-            // Bắn đợt pháo hoa lấp lánh ăn mừng
-            this.spawnCelebrationConfetti();
-        }, 400);
+            this._isUnwrapping = false;
+        }, 450);
     }
 
     startTypewriterWishes() {
