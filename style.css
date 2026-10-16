@@ -745,7 +745,7 @@ html, body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 16px 8px 52px 8px;
+    padding: 26px 12px 56px 12px;
     margin: auto;
     width: auto;
     max-width: 100%;
@@ -794,7 +794,7 @@ html, body {
     display: grid;
     grid-template-columns: repeat(5, 58px);
     grid-template-rows: repeat(3, 80px);
-    gap: 8px 6px;
+    gap: 12px 10px;
     justify-content: center;
     align-items: center;
     margin: auto;
@@ -820,33 +820,46 @@ html, body {
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* 4 người ngồi đằng sau (Hiệu ứng vòng cung chiều sâu) */
+/* 4 người ngồi đằng sau (Phóng to 1.5 lần, hiệu ứng vòng cung chiều sâu) */
 .cake-card-p1 {
     grid-column: 1;
     grid-row: 2;
-    z-index: 1;
-    transform: rotate(5deg) translateY(-2px);
+    z-index: 2;
+    transform: scale(1.5) rotate(5deg) translateY(-2px);
 }
 
 .cake-card-p2 {
     grid-column: 2;
     grid-row: 1;
     z-index: 1;
-    transform: rotate(2deg);
+    transform: scale(1.5) rotate(2deg);
 }
 
 .cake-card-p3 {
     grid-column: 4;
     grid-row: 1;
     z-index: 1;
-    transform: rotate(-2deg);
+    transform: scale(1.5) rotate(-2deg);
 }
 
 .cake-card-p4 {
     grid-column: 5;
     grid-row: 2;
-    z-index: 1;
-    transform: rotate(-5deg) translateY(-2px);
+    z-index: 2;
+    transform: scale(1.5) rotate(-5deg) translateY(-2px);
+}
+
+.cake-card-p1:hover {
+    transform: scale(1.56) rotate(5deg) translateY(-4px);
+}
+.cake-card-p2:hover {
+    transform: scale(1.56) rotate(2deg) translateY(-2px);
+}
+.cake-card-p3:hover {
+    transform: scale(1.56) rotate(-2deg) translateY(-2px);
+}
+.cake-card-p4:hover {
+    transform: scale(1.56) rotate(-5deg) translateY(-4px);
 }
 
 /* Thẻ bánh sinh nhật ở hàng 3, cột 3 (Kích thước gấp đôi chiều dài & chiều rộng: scale 2.0) */

@@ -294,10 +294,11 @@ class Game {
             cakeAfter: 'assets/card13.jpg'        // Bánh sinh nhật đổi thành card13
         };
         this.cakeBlown = false;
+        this._canCloseCakeModal = false;
 
         // Cấu hình lời chúc sinh nhật (Bạn có thể tùy ý sửa thông tin ở đây)
         this.birthdayConfig = {
-            recipientName: "from so u know",
+            recipientName: "from so u know:vv",
             avatarImg: "assets/card1.jpg",
             title: "HAPPY BIRTHDAY! 🎂",
             wishes: "<hu'< mU+`ng sJnk nH4t. nHa! :x Bu+'o+'c s4ng tUo^i? mO'j <hu'< b4n. lu0n zUj zE~, kUte pK0^ng tuoi?, lUk' n4o` ku~ng cU+o+i` tUo+j nhA! M4y m4n' + tK4nh` k0ng lu0n nE` ^^! Happy Birthday! \\:D/"
@@ -594,18 +595,28 @@ class Game {
             this.soundOffIcon.style.display = this.sound.enabled ? 'none' : 'block';
         });
 
-        // Next level & replay buttons
+        // Next level & replay buttons (có debounce chống click đúp)
         this.nextLevelBtn.addEventListener('click', () => {
+            if (this._isResettingGame) return;
+            this._isResettingGame = true;
+            this.level++;
             this.resetGame(true);
+            setTimeout(() => { this._isResettingGame = false; }, 400);
         });
         this.replayBtn.addEventListener('click', () => {
+            if (this._isResettingGame) return;
+            this._isResettingGame = true;
             this.resetGame(false);
+            setTimeout(() => { this._isResettingGame = false; }, 400);
         });
 
         // Birthday surprise interactions (Phương án A)
         if (this.openWishBtn) {
             this.openWishBtn.addEventListener('click', () => {
+                if (this._isOpeningWish) return;
+                this._isOpeningWish = true;
                 this.openBirthdaySurprise();
+                setTimeout(() => { this._isOpeningWish = false; }, 400);
             });
         }
         if (this.giftBoxClick) {
@@ -625,15 +636,18 @@ class Game {
         }
         if (this.bdayPushItBtn) {
             this.bdayPushItBtn.addEventListener('click', () => {
+                if (this._isGoingToCake) return;
+                this._isGoingToCake = true;
                 this.goToCakeStep();
+                setTimeout(() => { this._isGoingToCake = false; }, 500);
             });
         }
         if (this.blowCakeBtn) {
             this.blowCakeBtn.addEventListener('click', () => {
-                if (this.cakeBlown) {
-                    this.closeBirthdaySurprise();
-                } else {
+                if (!this.cakeBlown) {
                     this.blowCake();
+                } else if (this._canCloseCakeModal) {
+                    this.closeBirthdaySurprise();
                 }
             });
         }
@@ -641,7 +655,7 @@ class Game {
             this.cakeCardCenter.addEventListener('click', () => {
                 if (!this.cakeBlown) {
                     this.blowCake();
-                } else {
+                } else if (this._canCloseCakeModal) {
                     this.closeBirthdaySurprise();
                 }
             });
@@ -658,6 +672,10 @@ class Game {
         }
         if (this.birthdayModal) {
             this.birthdayModal.addEventListener('click', (e) => {
+                // Nếu đang ở màn thổi bánh và hiệu ứng 3s chưa chạy xong -> không đóng để tránh bấm đúp nhầm
+                if (this.bdayCakeStep && !this.bdayCakeStep.classList.contains('hidden') && !this._canCloseCakeModal) {
+                    return;
+                }
                 if (e.target === this.birthdayModal ||
                     e.target === this.bdayCardStep ||
                     e.target === this.bdayCakeStep ||
@@ -1190,6 +1208,7 @@ class Game {
 
     resetCakeStep() {
         this.cakeBlown = false;
+        this._canCloseCakeModal = false;
         if (this.cakeCenterFlame) {
             this.cakeCenterFlame.classList.remove('extinguished');
         }
@@ -1226,6 +1245,12 @@ class Game {
     blowCake() {
         if (this.cakeBlown) return;
         this.cakeBlown = true;
+        this._canCloseCakeModal = false;
+
+        // Khóa chống bấm đúp/bấm nhầm: Sau 3.2s khi màn chớp 3s và đổi ảnh hoàn tất mới cho phép bấm đóng
+        setTimeout(() => {
+            this._canCloseCakeModal = true;
+        }, 3200);
 
         // Âm thanh thổi nến
         this.sound.playBlowCandle();
@@ -1328,6 +1353,7 @@ class Game {
             clearInterval(this.typewriterTimer);
             this.typewriterTimer = null;
         }
+        this._canCloseCakeModal = false;
     }
 
     spawnCelebrationConfetti() {
