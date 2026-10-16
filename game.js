@@ -297,10 +297,10 @@ class Game {
 
         // Cấu hình lời chúc sinh nhật (Bạn có thể tùy ý sửa thông tin ở đây)
         this.birthdayConfig = {
-            recipientName: "Bạn Tuyệt Vời 💖",
+            recipientName: "from so u know",
             avatarImg: "assets/card1.jpg",
             title: "HAPPY BIRTHDAY! 🎂",
-            wishes: "Chúc mừng sinh nhật! 💖 Bước sang tuổi mới, chúc bạn luôn ngập tràn niềm vui, nụ cười rạng rỡ trên môi, thật nhiều may mắn, sức khỏe và mọi điều ước đều trở thành hiện thực nhé! ✨🎂🎉"
+            wishes: "<hu'< mU+`ng sJnk nH4t. nHa! :x Bu+'o+'c s4ng tUo^i? mO'j <hu'< b4n. lu0n zUj zE~, kUte pK0^ng tuoi?, lUk' n4o` ku~ng cU+o+i` tUo+j nhA! M4y m4n' + tK4nh` k0ng lu0n nE` ^^! Happy Birthday! \\:D/"
         };
         this.typewriterTimer = null;
 
