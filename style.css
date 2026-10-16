@@ -334,6 +334,43 @@ html, body {
     z-index: 100;
     overflow-y: auto;
     padding: 16px;
+    transition: background 0.45s ease;
+}
+
+/* Khi ở màn hình thổi bánh: nền đen huyền ảo làm nổi bật nến và bánh */
+#birthday-modal.cake-step-active {
+    background: #000000 !important;
+}
+
+/* Khi thổi tắt nến: giữ trọn vẹn nền đen tuyền */
+#birthday-modal.cake-blown-dark {
+    background: #000000 !important;
+}
+
+/* Lớp chớp nháy toàn màn hình (Screen flash) khi thổi nến */
+.screen-flash-overlay {
+    position: fixed;
+    inset: 0;
+    background: #ffffff;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.screen-flash-overlay.flashing {
+    animation: screenFlashAnim 0.38s ease-out forwards;
+}
+
+@keyframes screenFlashAnim {
+    0% {
+        opacity: 0;
+    }
+    18% {
+        opacity: 0.96;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
 .bday-decorations {
@@ -702,10 +739,42 @@ html, body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0;
+    padding: 16px 8px 52px 8px;
     margin: auto;
     width: auto;
     max-width: 100%;
+}
+
+/* Vùng sáng tròn ấm áp xung quanh bánh khi đang có nến */
+.candle-ambient-glow {
+    position: absolute;
+    top: 88%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 440px;
+    height: 440px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.44) 0%, rgba(245, 158, 11, 0.22) 34%, rgba(245, 158, 11, 0.08) 56%, transparent 75%);
+    pointer-events: none;
+    z-index: 0;
+    animation: candleAmbientPulse 1.8s ease-in-out infinite alternate;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+@keyframes candleAmbientPulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.95);
+        opacity: 0.88;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.05);
+        opacity: 1;
+    }
+}
+
+.candle-ambient-glow.extinguished {
+    opacity: 0 !important;
+    transform: translate(-50%, -50%) scale(0.3) !important;
 }
 
 /* Lưới 5 cột x 3 hàng đúng sơ đồ:
@@ -714,6 +783,8 @@ html, body {
    0 0 1 0 0  (Hàng 3: Bánh sinh nhật ở cột 3 phía trước)
 */
 .bday-cake-grid {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: repeat(5, 58px);
     grid-template-rows: repeat(3, 80px);
@@ -772,15 +843,15 @@ html, body {
     transform: rotate(-5deg) translateY(-2px);
 }
 
-/* Thẻ bánh sinh nhật ở hàng 3, cột 3 (Phía trước ở giữa) */
+/* Thẻ bánh sinh nhật ở hàng 3, cột 3 (Kích thước gấp đôi chiều dài & chiều rộng: scale 2.0) */
 .cake-card-center {
     grid-column: 3;
     grid-row: 3;
-    transform: scale(1.35) translateY(-8px);
+    transform: scale(2.0) translateY(12px);
     z-index: 10;
     border: none !important;
     border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.9);
     cursor: pointer;
     overflow: visible;
 }
@@ -790,12 +861,12 @@ html, body {
 }
 
 .cake-card-center:hover {
-    transform: scale(1.42) translateY(-10px);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.95);
+    transform: scale(2.08) translateY(10px);
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.95);
 }
 
 .cake-card-center:active {
-    transform: scale(1.28) translateY(-6px);
+    transform: scale(1.94) translateY(14px);
 }
 
 /* Ngọn nến lung linh trên thẻ bánh ở giữa */

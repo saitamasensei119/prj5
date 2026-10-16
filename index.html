@@ -82,6 +82,9 @@
 
         <!-- Birthday Surprise Modal (Phương án A) -->
         <div id="birthday-modal" class="modal-overlay hidden">
+            <!-- Lớp chớp nháy toàn màn hình khi thổi nến -->
+            <div id="screen-flash-overlay" class="screen-flash-overlay"></div>
+
             <div id="bday-decorations" class="bday-decorations"></div>
 
             <!-- Step 1: Interactive 3D Gift Box -->
@@ -135,6 +138,9 @@
                 <div class="bday-cake-container">
                     <!-- Lưới 5 thẻ: 4 người ngồi đằng sau chiếc bánh (01010 / 10001 / 00100) -->
                     <div class="bday-cake-grid">
+                        <!-- Vùng sáng tròn ấm áp xung quanh bánh khi có nến -->
+                        <div id="candle-ambient-glow" class="candle-ambient-glow"></div>
+
                         <!-- Hàng 2, Cột 1: Người 1 (Ngoài cùng bên trái) -->
                         <div class="cake-card-wrapper cake-card-p1">
                             <img id="cake-img-p1" src="assets/card3.jpg" alt="Người 1" class="cake-grid-img">
