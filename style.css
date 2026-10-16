@@ -735,7 +735,46 @@ html, body {
 }
 
 /* Bánh Kem & Cây Nến Tương Tác */
-/* --- Bước 3: Màn Thổi Bánh Sinh Nhật (Chỉ 4 thẻ và 1 bánh, không viền) --- */
+/* --- Video Hiệu Ứng Pháo Hoa (Trên) & Lửa Cháy (Dưới) --- */
+.bday-media {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    max-width: 680px;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+    z-index: 1; /* Nền phía sau các bức ảnh */
+}
+
+/* Video pháo hoa ở nửa trên */
+.bday-fireworks-video {
+    top: 0;
+    height: 48vh;
+    max-height: 420px;
+    object-fit: cover;
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0) 100%);
+    filter: brightness(1.1) contrast(1.1);
+}
+
+/* Video lửa cháy ở chân đáy */
+.bday-fire-video {
+    bottom: 0;
+    height: 38vh;
+    max-height: 300px;
+    object-fit: cover;
+    -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 1) 65%, rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(to top, rgba(0, 0, 0, 1) 65%, rgba(0, 0, 0, 0) 100%);
+    filter: brightness(1.15) contrast(1.15);
+}
+
+.bday-media.active {
+    opacity: 0.95;
+}
+
 .bday-cake-container {
     position: relative;
     background: transparent !important;

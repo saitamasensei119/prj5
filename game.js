@@ -272,6 +272,8 @@ class Game {
         this.closeCakeBtn = document.getElementById('close-cake-btn');
         this.candleAmbientGlow = document.getElementById('candle-ambient-glow');
         this.screenFlashOverlay = document.getElementById('screen-flash-overlay');
+        this.bdayFireworksVideo = document.getElementById('bday-fireworks-video');
+        this.bdayFireVideo = document.getElementById('bday-fire-video');
 
         // Cấu hình các thẻ cho Màn Thổi Bánh Sinh Nhật (4 người ngồi đằng sau cái bánh)
         // Bố cục:
@@ -1232,6 +1234,17 @@ class Game {
             this.cakeGrantedMsg.classList.add('hidden');
         }
 
+        if (this.bdayFireworksVideo) {
+            this.bdayFireworksVideo.classList.remove('active');
+            this.bdayFireworksVideo.pause();
+            this.bdayFireworksVideo.currentTime = 0;
+        }
+        if (this.bdayFireVideo) {
+            this.bdayFireVideo.classList.remove('active');
+            this.bdayFireVideo.pause();
+            this.bdayFireVideo.currentTime = 0;
+        }
+
         const imgP1 = document.getElementById('cake-img-p1');
         const imgP2 = document.getElementById('cake-img-p2');
         const imgP3 = document.getElementById('cake-img-p3');
@@ -1307,6 +1320,20 @@ class Game {
             this.cakeGrantedMsg.classList.remove('hidden');
         }
 
+        // Bật video pháo hoa ở trên và video lửa cháy ở dưới sau khi chớp sáng
+        setTimeout(() => {
+            if (this.bdayFireworksVideo) {
+                this.bdayFireworksVideo.currentTime = 0;
+                this.bdayFireworksVideo.play().catch(() => {});
+                this.bdayFireworksVideo.classList.add('active');
+            }
+            if (this.bdayFireVideo) {
+                this.bdayFireVideo.currentTime = 0;
+                this.bdayFireVideo.play().catch(() => {});
+                this.bdayFireVideo.classList.add('active');
+            }
+        }, 900);
+
         // Đổi nút thành "tiếp tục" để người dùng bấm quay lại chơi
         if (this.blowCakeBtn) {
             this.blowCakeBtn.textContent = 'tiếp tục';
@@ -1354,6 +1381,17 @@ class Game {
             this.typewriterTimer = null;
         }
         this._canCloseCakeModal = false;
+
+        if (this.bdayFireworksVideo) {
+            this.bdayFireworksVideo.classList.remove('active');
+            this.bdayFireworksVideo.pause();
+            this.bdayFireworksVideo.currentTime = 0;
+        }
+        if (this.bdayFireVideo) {
+            this.bdayFireVideo.classList.remove('active');
+            this.bdayFireVideo.pause();
+            this.bdayFireVideo.currentTime = 0;
+        }
     }
 
     spawnCelebrationConfetti() {
