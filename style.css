@@ -347,7 +347,7 @@ html, body {
     background: #000000 !important;
 }
 
-/* Lớp chớp nháy toàn màn hình (Screen flash) khi thổi nến */
+/* Lớp chớp nháy toàn màn hình (Screen flash) khi thổi nến - hiệu ứng kéo dài 3s */
 .screen-flash-overlay {
     position: fixed;
     inset: 0;
@@ -358,15 +358,21 @@ html, body {
 }
 
 .screen-flash-overlay.flashing {
-    animation: screenFlashAnim 0.38s ease-out forwards;
+    animation: screenFlashAnim 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes screenFlashAnim {
     0% {
         opacity: 0;
     }
-    18% {
-        opacity: 0.96;
+    5% {
+        opacity: 0.98;
+    }
+    22% {
+        opacity: 0.92;
+    }
+    62% {
+        opacity: 0.40;
     }
     100% {
         opacity: 0;

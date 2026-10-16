@@ -1250,7 +1250,7 @@ class Game {
             this.birthdayModal.classList.add('cake-blown-dark');
         }
 
-        // Đổi ảnh tất cả các thẻ (4 người + 1 bánh) sang ảnh mới với hiệu ứng lật mượt mà
+        // Đổi ảnh tất cả các thẻ (4 người + 1 bánh) sang ảnh mới với hiệu ứng lật mượt mà dưới màn chớp sáng
         const cardsToSwap = [
             { img: this.cakeImgCenter, newSrc: this.cakeScreenConfig.cakeAfter, rot: 4 },
             { img: document.getElementById('cake-img-p1'), newSrc: this.cakeScreenConfig.person1After, rot: 3 },
@@ -1261,7 +1261,7 @@ class Game {
 
         cardsToSwap.forEach(item => {
             if (item.img) {
-                item.img.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                item.img.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
                 item.img.style.opacity = '0';
                 item.img.style.transform = `scale(0.85) rotate(${item.rot}deg)`;
             }
@@ -1275,7 +1275,7 @@ class Game {
                     item.img.style.transform = 'scale(1) rotate(0deg)';
                 }
             });
-        }, 250);
+        }, 650);
 
         // Hiện thông điệp ước nguyện
         if (this.cakeGrantedMsg) {
