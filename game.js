@@ -8,6 +8,8 @@ class SoundFX {
     constructor() {
         this.ctx = null;
         this.enabled = true;
+        this.bdayOscs = [];
+        this.bdayMasterGain = null;
     }
 
     init() {
@@ -159,10 +161,40 @@ class SoundFX {
         });
     }
 
+    stopHappyBirthday() {
+        if (this.bdayMasterGain && this.ctx) {
+            try {
+                this.bdayMasterGain.gain.cancelScheduledValues(this.ctx.currentTime);
+                this.bdayMasterGain.gain.setValueAtTime(0, this.ctx.currentTime);
+                this.bdayMasterGain.disconnect();
+            } catch (e) {}
+            this.bdayMasterGain = null;
+        }
+        if (this.bdayOscs && this.bdayOscs.length > 0) {
+            this.bdayOscs.forEach(osc => {
+                try {
+                    osc.stop();
+                } catch (e) {}
+                try {
+                    osc.disconnect();
+                } catch (e) {}
+            });
+            this.bdayOscs = [];
+        }
+    }
+
     playHappyBirthday() {
         if (!this.enabled) return;
         this.init();
         if (!this.ctx) return;
+
+        // Dừng đoạn nhạc cũ nếu đang phát dở
+        this.stopHappyBirthday();
+
+        this.bdayMasterGain = this.ctx.createGain();
+        this.bdayMasterGain.gain.setValueAtTime(1, this.ctx.currentTime);
+        this.bdayMasterGain.connect(this.ctx.destination);
+        this.bdayOscs = [];
 
         // "Happy Birthday To You" Music Box Melodic Sequence (Key of C)
         const notes = [
@@ -213,10 +245,12 @@ class SoundFX {
             gain.gain.exponentialRampToValueAtTime(0.001, startTime + item.d);
 
             osc.connect(gain);
-            gain.connect(this.ctx.destination);
+            gain.connect(this.bdayMasterGain);
 
             osc.start(startTime);
             osc.stop(startTime + item.d + 0.05);
+
+            this.bdayOscs.push(osc);
 
             offset += item.g;
         });
@@ -274,6 +308,8 @@ class Game {
         this.screenFlashOverlay = document.getElementById('screen-flash-overlay');
         this.bdayFireworksVideo = document.getElementById('bday-fireworks-video');
         this.bdayFireVideo = document.getElementById('bday-fire-video');
+        this.bdayAudio = null;
+        this.initBirthdayMusic();
 
         // Cấu hình các thẻ cho Màn Thổi Bánh Sinh Nhật (4 người ngồi đằng sau cái bánh)
         // Bố cục:
@@ -595,6 +631,12 @@ class Game {
             this.sound.enabled = !this.sound.enabled;
             this.soundOnIcon.style.display = this.sound.enabled ? 'block' : 'none';
             this.soundOffIcon.style.display = this.sound.enabled ? 'none' : 'block';
+            if (this.bdayAudio) {
+                this.bdayAudio.muted = !this.sound.enabled;
+            }
+            if (!this.sound.enabled) {
+                this.sound.stopHappyBirthday();
+            }
         });
 
         // Next level & replay buttons (có debounce chống click đúp)
@@ -1106,6 +1148,8 @@ class Game {
         this._isUnwrapping = false;
 
         // Reset về Bước 1: Hộp quà 3D
+        this.sound.stopHappyBirthday();
+        this.stopBirthdayMusic();
         if (this.bdayGiftStep) this.bdayGiftStep.classList.remove('hidden');
         if (this.bdayCardStep) this.bdayCardStep.classList.add('hidden');
         if (this.bdayCakeStep) this.bdayCakeStep.classList.add('hidden');
@@ -1138,6 +1182,7 @@ class Game {
         this._isUnwrapping = true;
 
         this.sound.playGiftOpen();
+        this.sound.playHappyBirthday();
 
         const giftWrapper = document.getElementById('gift-box-click');
         if (giftWrapper) {
@@ -1160,9 +1205,6 @@ class Game {
             // Gán dữ liệu người nhận
             if (this.bdayRecipient) this.bdayRecipient.textContent = this.birthdayConfig.recipientName;
             if (this.bdayAvatarImg) this.bdayAvatarImg.src = this.birthdayConfig.avatarImg;
-
-            // Bật giai điệu Happy Birthday
-            this.sound.playHappyBirthday();
 
             // Chạy hiệu ứng Typewriter cho lời chúc
             this.startTypewriterWishes();
@@ -1198,6 +1240,7 @@ class Game {
     }
 
     goToCakeStep() {
+        this.sound.stopHappyBirthday();
         if (this.bdayCardStep) this.bdayCardStep.classList.add('hidden');
         if (this.bdayCakeStep) {
             this.bdayCakeStep.classList.remove('hidden');
@@ -1209,6 +1252,7 @@ class Game {
     }
 
     resetCakeStep() {
+        this.sound.stopHappyBirthday();
         this.cakeBlown = false;
         this._canCloseCakeModal = false;
         if (this.cakeCenterFlame) {
@@ -1245,6 +1289,8 @@ class Game {
             this.bdayFireVideo.currentTime = 0;
         }
 
+        this.stopBirthdayMusic();
+
         const imgP1 = document.getElementById('cake-img-p1');
         const imgP2 = document.getElementById('cake-img-p2');
         const imgP3 = document.getElementById('cake-img-p3');
@@ -1267,6 +1313,9 @@ class Game {
 
         // Âm thanh thổi nến
         this.sound.playBlowCandle();
+
+        // Phát bài nhạc music.opus bắt đầu từ 0:32 sau khi ấn vào bánh thổi nến
+        this.playBirthdayMusic();
 
         // 1. Tắt ngọn lửa
         if (this.cakeCenterFlame) {
@@ -1362,8 +1411,7 @@ class Game {
         if (this.blowCandleBtn) this.blowCandleBtn.style.display = 'block';
         if (this.wishGrantedMsg) this.wishGrantedMsg.classList.add('hidden');
 
-        // Bật lại bài Happy Birthday & Typewriter
-        this.sound.playHappyBirthday();
+        // Bật lại lời chúc Typewriter
         this.startTypewriterWishes();
     }
 
@@ -1391,6 +1439,67 @@ class Game {
             this.bdayFireVideo.classList.remove('active');
             this.bdayFireVideo.pause();
             this.bdayFireVideo.currentTime = 0;
+        }
+
+        this.sound.stopHappyBirthday();
+        this.stopBirthdayMusic();
+    }
+
+    initBirthdayMusic() {
+        if (this.bdayAudio) return;
+        try {
+            this.bdayAudio = new Audio('assets/music.opus');
+            this.bdayAudio.preload = 'auto';
+
+            // Khi bài nhạc chạy hết -> Tự động lặp lại từ đầu bài (0:00) cho đến hết
+            this.bdayAudio.addEventListener('ended', () => {
+                if (this.bdayAudio) {
+                    this.bdayAudio.currentTime = 0;
+                    this.bdayAudio.play().catch(() => {});
+                }
+            });
+        } catch (e) {
+            console.warn('Cannot init birthday audio:', e);
+        }
+    }
+
+    playBirthdayMusic() {
+        this.initBirthdayMusic();
+        if (!this.bdayAudio) return;
+
+        this.bdayAudio.muted = !this.sound.enabled;
+
+        const startAt = 32; // Bắt đầu ở 0:32 theo đúng yêu cầu
+
+        const doPlay = () => {
+            try {
+                this.bdayAudio.currentTime = startAt;
+            } catch (e) {}
+            this.bdayAudio.play().catch((err) => {
+                console.log('Audio autoplay prevented or error:', err);
+            });
+        };
+
+        if (this.bdayAudio.readyState >= 1) {
+            doPlay();
+        } else {
+            const onLoaded = () => {
+                doPlay();
+                this.bdayAudio.removeEventListener('loadedmetadata', onLoaded);
+                this.bdayAudio.removeEventListener('canplay', onLoaded);
+            };
+            this.bdayAudio.addEventListener('loadedmetadata', onLoaded);
+            this.bdayAudio.addEventListener('canplay', onLoaded);
+            this.bdayAudio.load();
+        }
+    }
+
+    stopBirthdayMusic() {
+        if (this.bdayAudio) {
+            try {
+                this.bdayAudio.pause();
+                this.bdayAudio.currentTime = 32;
+            } catch (e) {}
         }
     }
 
