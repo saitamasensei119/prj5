@@ -281,8 +281,8 @@ class Game {
             person2: 'assets/card4.jpg',    // Người 2 (Hàng 1, Cột 2 - Ở giữa bên trái)
             person3: 'assets/card5.jpg',    // Người 3 (Hàng 1, Cột 4 - Ở giữa bên phải)
             person4: 'assets/card6.jpg',    // Người 4 (Hàng 2, Cột 5 - Ngoài cùng bên phải)
-            cakeBefore: 'assets/card1.jpg', // Bánh sinh nhật LÚC CHƯA THỔI (Hàng 3, Cột 3)
-            cakeAfter: 'assets/card2.jpg'   // Bánh sinh nhật SAU KHI THỔI
+            cakeBefore: 'assets/card12.jpg', // Bánh sinh nhật LÚC CHƯA THỔI (Hàng 3, Cột 3)
+            cakeAfter: 'assets/card13.jpg'   // Bánh sinh nhật SAU KHI THỔI
         };
         this.cakeBlown = false;
 
@@ -632,6 +632,8 @@ class Game {
             this.cakeCardCenter.addEventListener('click', () => {
                 if (!this.cakeBlown) {
                     this.blowCake();
+                } else {
+                    this.closeBirthdaySurprise();
                 }
             });
         }
@@ -647,7 +649,11 @@ class Game {
         }
         if (this.birthdayModal) {
             this.birthdayModal.addEventListener('click', (e) => {
-                if (e.target === this.birthdayModal || e.target === this.bdayCardStep || e.target === this.bdayCakeStep) {
+                if (e.target === this.birthdayModal ||
+                    e.target === this.bdayCardStep ||
+                    e.target === this.bdayCakeStep ||
+                    e.target.classList.contains('bday-cake-container') ||
+                    e.target.classList.contains('bday-cake-grid')) {
                     this.closeBirthdaySurprise();
                 }
             });

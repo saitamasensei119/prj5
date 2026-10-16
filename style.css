@@ -692,11 +692,20 @@ html, body {
 }
 
 /* Bánh Kem & Cây Nến Tương Tác */
-/* --- Bước 3: Màn Thổi Bánh Sinh Nhật --- */
+/* --- Bước 3: Màn Thổi Bánh Sinh Nhật (Chỉ 4 thẻ và 1 bánh, không viền) --- */
 .bday-cake-container {
-    max-width: 350px;
-    width: 94%;
-    padding: 24px 12px 20px 12px;
+    position: relative;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: auto;
+    width: auto;
+    max-width: 100%;
 }
 
 /* Lưới 5 cột x 3 hàng đúng sơ đồ:
@@ -706,23 +715,22 @@ html, body {
 */
 .bday-cake-grid {
     display: grid;
-    grid-template-columns: repeat(5, 54px);
-    grid-template-rows: repeat(3, 74px);
+    grid-template-columns: repeat(5, 58px);
+    grid-template-rows: repeat(3, 80px);
     gap: 8px 6px;
     justify-content: center;
     align-items: center;
-    margin: 18px auto 24px auto;
+    margin: auto;
 }
 
 .cake-card-wrapper {
     position: relative;
     width: 100%;
     height: 100%;
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1.5px solid rgba(251, 191, 36, 0.45);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
     transition: all 0.3s ease;
 }
 
@@ -731,6 +739,7 @@ html, body {
     height: 100%;
     object-fit: cover;
     display: block;
+    border-radius: 12px;
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
@@ -769,20 +778,20 @@ html, body {
     grid-row: 3;
     transform: scale(1.35) translateY(-8px);
     z-index: 10;
-    border: 2.5px solid #fbbf24;
-    border-radius: 12px;
-    box-shadow: 0 0 25px rgba(251, 191, 36, 0.85), 0 8px 22px rgba(0, 0, 0, 0.7);
+    border: none !important;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
     cursor: pointer;
     overflow: visible;
 }
 
 .cake-card-center .cake-grid-img {
-    border-radius: 10px;
+    border-radius: 14px;
 }
 
 .cake-card-center:hover {
     transform: scale(1.42) translateY(-10px);
-    box-shadow: 0 0 35px rgba(251, 191, 36, 1), 0 10px 25px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.95);
 }
 
 .cake-card-center:active {
@@ -792,13 +801,13 @@ html, body {
 /* Ngọn nến lung linh trên thẻ bánh ở giữa */
 .cake-flame {
     position: absolute;
-    top: -22px;
+    top: -24px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 22px;
-    filter: drop-shadow(0 0 8px #f59e0b);
+    font-size: 26px;
+    filter: drop-shadow(0 0 10px #f59e0b);
     animation: flameBob 0.8s ease-in-out infinite alternate;
-    z-index: 10;
+    z-index: 15;
     pointer-events: none;
     transition: all 0.35s ease;
 }
@@ -817,20 +826,5 @@ html, body {
 .cake-flame.extinguished {
     opacity: 0;
     transform: translateX(-50%) translateY(-18px) scale(0.3);
-}
-
-/* Thông điệp sau khi thổi */
-.cake-granted-msg {
-    margin-top: 14px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #34d399;
-    text-shadow: 0 2px 8px rgba(52, 211, 153, 0.5);
-    animation: wishGrantedIn 0.4s ease-out;
-}
-
-@keyframes wishGrantedIn {
-    0% { opacity: 0; transform: translateY(6px); }
-    100% { opacity: 1; transform: translateY(0); }
 }
 
